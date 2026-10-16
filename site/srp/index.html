@@ -1,0 +1,1869 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Company 統合ダッシュボード ＆ DCM SRP施策ポータル</title>
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<!-- FontAwesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+  :root {
+    --bg-main: #F8FAFC;
+    --bg-card: #FFFFFF;
+    --text-main: #0F172A;
+    --text-muted: #64748B;
+    --border-color: #E2E8F0;
+    
+    --brand-blue: #2563EB;
+    --brand-indigo: #4F46E5;
+    --brand-gradient: linear-gradient(135deg, #0F2C59 0%, #1E3A8A 40%, #4F46E5 100%);
+    --purple-gradient: linear-gradient(135deg, #6D28D9 0%, #7C3AED 100%);
+    --green-gradient: linear-gradient(135deg, #059669 0%, #10B981 100%);
+    
+    --success-bg: #DCFCE7;
+    --success-text: #15803D;
+    --danger-bg: #FEE2E2;
+    --danger-text: #B91C1C;
+    --warn-bg: #FEF3C7;
+    --warn-text: #B45309;
+    --purple-bg: #F3E8FF;
+    --purple-text: #6B21A8;
+
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-full: 9999px;
+  }
+
+  [data-theme="dark"] {
+    --bg-main: #0F172A;
+    --bg-card: #1E293B;
+    --text-main: #F8FAFC;
+    --text-muted: #94A3B8;
+    --border-color: #334155;
+    --brand-gradient: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #312E81 100%);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body {
+    font-family: 'Noto Sans JP', 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    line-height: 1.6;
+    padding-bottom: 60px;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  header {
+    background: var(--brand-gradient);
+    color: white;
+    padding: 24px 20px 60px;
+    position: relative;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .header-content {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .brand-icon {
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(8px);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  h1 { font-size: 1.4rem; font-weight: 900; }
+  .tagline { font-size: 0.85rem; opacity: 0.85; }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .btn-action {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 8px 16px;
+    border-radius: var(--radius-full);
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+
+  .btn-action:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    color: white;
+  }
+
+  .nav-tabs-container {
+    max-width: 1280px;
+    margin: -34px auto 26px;
+    padding: 0 20px;
+    position: relative;
+    z-index: 30;
+  }
+
+  .nav-menu-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding: 0 6px;
+  }
+
+  .nav-menu-badge {
+    background: #2563EB;
+    color: #FFFFFF;
+    font-size: 0.82rem;
+    font-weight: 800;
+    padding: 4px 14px;
+    border-radius: var(--radius-full);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+    letter-spacing: 0.03em;
+    animation: pulseMenuBadge 2.5s infinite ease-in-out;
+  }
+
+  @keyframes pulseMenuBadge {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.04); box-shadow: 0 6px 18px rgba(37, 99, 235, 0.5); }
+  }
+
+  .nav-menu-subtext {
+    font-size: 0.78rem;
+    color: #1E293B;
+    font-weight: 800;
+    background: #FFFFFF;
+    backdrop-filter: blur(8px);
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+    border: 1px solid #CBD5E1;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  }
+
+  .nav-tabs {
+    background: #FFFFFF;
+    padding: 8px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    gap: 8px;
+    box-shadow: 0 12px 35px -5px rgba(15, 23, 42, 0.15), 0 4px 12px -2px rgba(0, 0, 0, 0.1);
+    border: 3px solid #2563EB; /* 鮮やかな青枠で「ここにメニューがある」ことを一目で強調 */
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .nav-tabs::-webkit-scrollbar { display: none; }
+
+  .tab-btn {
+    flex: 1;
+    min-width: 160px;
+    padding: 12px 16px;
+    border: 1px solid #CBD5E1;
+    border-radius: var(--radius-md);
+    background: #F1F5F9;
+    color: #1E293B;
+    font-weight: 800;
+    font-size: 0.88rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    white-space: nowrap;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+  }
+
+  .tab-btn:hover:not(.active) {
+    background: #E2E8F0;
+    border-color: #64748B;
+    transform: translateY(-2px);
+    color: #0F172A;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+
+  .tab-btn.active {
+    background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+    color: #FFFFFF;
+    border-color: #1D4ED8;
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.45);
+    transform: translateY(-1px);
+  }
+
+  .tab-icon {
+    font-size: 1rem;
+  }
+
+  [data-theme="dark"] .nav-tabs {
+    background: #151C2C;
+    border-color: #60A5FA;
+    box-shadow: 0 12px 35px -5px rgba(0, 0, 0, 0.6);
+  }
+
+  [data-theme="dark"] .tab-btn {
+    background: #1E293B;
+    border-color: #334155;
+    color: #F8FAFC;
+  }
+
+  [data-theme="dark"] .tab-btn:hover:not(.active) {
+    background: #334155;
+    border-color: #64748B;
+  }
+
+  [data-theme="dark"] .nav-menu-subtext {
+    background: #1E293B;
+    color: #F8FAFC;
+    border-color: #334155;
+  }
+
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* -------------------------------------------------------------
+     MD Sheet Link Card (特設リンクカード)
+  ------------------------------------------------------------- */
+  .md-sheet-card {
+    background: linear-gradient(135deg, #059669 0%, #10B981 100%);
+    color: white;
+    border-radius: var(--radius-lg);
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .md-sheet-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    filter: brightness(1.05);
+  }
+
+  .md-sheet-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .md-sheet-icon {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(6px);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+  }
+
+  .md-sheet-title {
+    font-size: 1.15rem;
+    font-weight: 900;
+    line-height: 1.2;
+  }
+
+  .md-sheet-desc {
+    font-size: 0.85rem;
+    opacity: 0.9;
+    margin-top: 2px;
+  }
+
+  .btn-md-go {
+    background: white;
+    color: #059669;
+    padding: 10px 22px;
+    border-radius: var(--radius-full);
+    font-weight: 800;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .kpi-card {
+    background: var(--bg-card);
+    padding: 20px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    user-select: none;
+  }
+
+  .kpi-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--brand-blue);
+  }
+
+  .kpi-card::after {
+    content: '➔';
+    position: absolute;
+    right: 14px;
+    top: 14px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .kpi-card:hover::after {
+    opacity: 1;
+    transform: translateX(2px);
+    color: var(--brand-blue);
+  }
+
+  .kpi-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .kpi-val { font-size: 1.8rem; font-weight: 900; line-height: 1.1; }
+  .kpi-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 700; }
+
+  .progress-bar-bg {
+    height: 8px;
+    background: var(--border-color);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    margin-top: 8px;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #2563EB, #4F46E5);
+    border-radius: var(--radius-full);
+  }
+
+  .card {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    padding: 24px;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 24px;
+  }
+
+  .card-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  .copy-box {
+    background: var(--bg-main);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+
+  .copy-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .copy-text {
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.82rem;
+    background: var(--bg-card);
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    word-break: break-all;
+    white-space: pre-wrap;
+    line-height: 1.6;
+  }
+
+  .btn-copy {
+    background: var(--brand-blue);
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: var(--radius-full);
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+
+  .btn-copy:hover { background: #1D4ED8; }
+  .btn-copy.copied { background: #15803D !important; }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .pill-green { background: var(--success-bg); color: var(--success-text); }
+  .pill-red { background: var(--danger-bg); color: var(--danger-text); }
+  .pill-warn { background: var(--warn-bg); color: var(--warn-text); }
+  .pill-purple { background: var(--purple-bg); color: var(--purple-text); }
+
+  .search-input {
+    width: 100%;
+    padding: 14px 20px;
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--border-color);
+    background: var(--bg-card);
+    color: var(--text-main);
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    outline: none;
+  }
+
+  .search-input:focus { border-color: var(--brand-blue); }
+
+  .table-responsive { overflow-x: auto; }
+  .data-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; min-width: 850px; }
+  .data-table th { background: #0F2C59; color: white; padding: 12px 16px; text-align: left; font-weight: 700; }
+  .data-table td { padding: 12px 16px; border-bottom: 1px solid var(--border-color); }
+  .data-table tr:hover { background: rgba(37, 99, 235, 0.04); }
+
+  #toast {
+    visibility: hidden;
+    min-width: 250px;
+    background: #0F172A;
+    color: #FFF;
+    text-align: center;
+    border-radius: var(--radius-full);
+    padding: 12px 24px;
+    position: fixed;
+    z-index: 100;
+    left: 50%;
+    bottom: 30px;
+    transform: translateX(-50%);
+    font-size: 0.9rem;
+    font-weight: 700;
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    transition: opacity 0.3s, bottom 0.3s;
+  }
+  #toast.show { visibility: visible; opacity: 1; bottom: 40px; }
+@media (max-width: 768px) {
+    header { padding: 18px 14px 44px; }
+    .nav-tabs-container { margin: -18px auto 16px; padding: 0 12px; }
+    .nav-menu-header { gap: 6px; margin-bottom: 6px; }
+    .nav-menu-badge { font-size: 0.74rem; padding: 3px 10px; }
+    .nav-menu-subtext { font-size: 0.72rem; padding: 3px 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .nav-tabs { padding: 6px; gap: 6px; border-width: 2px; }
+    .tab-btn { min-width: 140px; padding: 10px 12px; font-size: 0.82rem; }
+  }
+
+/* === Feature 1, 2, 3 Additions === */
+.tag-filter-btn {
+  background: #F1F5F9;
+  color: #475569;
+  border: 1px solid #CBD5E1;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.tag-filter-btn:hover, .tag-filter-btn.active {
+  background: #2563EB;
+  color: #FFFFFF;
+  border-color: #2563EB;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+}
+
+.btn-smart-gen {
+  background: #FFFBEB;
+  color: #B45309;
+  border: 1px solid #FDE68A;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  cursor: pointer;
+  margin-left: 6px;
+  transition: all 0.15s ease;
+}
+.btn-smart-gen:hover {
+  background: #FEF3C7;
+  color: #78350F;
+}
+
+/* Mobile Bottom Navigation Bar */
+.mobile-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border-color);
+  z-index: 999;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 768px) {
+  .mobile-bottom-nav {
+    display: flex;
+  }
+  body {
+    padding-bottom: 70px;
+  }
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: #64748B;
+  font-size: 0.72rem;
+  font-weight: 700;
+  gap: 3px;
+  cursor: pointer;
+  flex: 1;
+  height: 100%;
+}
+.bottom-nav-item i {
+  font-size: 1.15rem;
+}
+.bottom-nav-item.active {
+  color: #2563EB;
+}
+
+
+/* === Hamburger Button & Slide-in Drawer Menu === */
+.btn-hamburger {
+  background: #2563EB;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-right: 10px;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+.btn-hamburger:hover {
+  background: #1D4ED8;
+  transform: scale(1.04);
+}
+
+.drawer-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  z-index: 9998;
+}
+
+.drawer-menu {
+  position: fixed;
+  top: 0;
+  left: -300px;
+  width: 280px;
+  height: 100%;
+  background: #FFFFFF;
+  z-index: 9999;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.drawer-menu.open {
+  left: 0;
+}
+.drawer-overlay.open {
+  display: block;
+}
+
+.drawer-header {
+  padding: 18px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #F8FAFC;
+}
+
+.drawer-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: #64748B;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.drawer-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.drawer-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #F8FAFC;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #334155;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+.drawer-item i {
+  font-size: 1.15rem;
+}
+.drawer-item.active, .drawer-item:hover {
+  background: #EFF6FF;
+  border-color: #93C5FD;
+  color: #1D4ED8;
+}
+
+.drawer-footer {
+  padding: 16px;
+  border-top: 1px solid var(--border-color);
+  background: #F8FAFC;
+}
+.drawer-footer-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #059669;
+  text-decoration: none;
+}
+
+
+
+/* === Menu Guide Pointer (Positioned Below Header Logo) === */
+.menu-guide-below {
+  width: 100%;
+  max-width: 1280px;
+  margin: 10px auto 0;
+  background: #FEF08A;
+  color: #854D0E;
+  border: 1px solid #FDE68A;
+  font-size: 0.84rem;
+  font-weight: 900;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 3px 10px rgba(234, 179, 8, 0.35);
+  animation: pulsePointUp 2.2s infinite ease-in-out;
+}
+.menu-guide-below i {
+  font-size: 1rem;
+  color: #B45309;
+}
+
+@keyframes pulsePointUp {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-3px) scale(1.02); box-shadow: 0 5px 14px rgba(234, 179, 8, 0.5); }
+}
+
+@media (max-width: 640px) {
+  .menu-guide-below {
+    font-size: 0.78rem;
+    padding: 5px 10px;
+  }
+}
+
+  50% { transform: translateX(-4px) scale(1.04); box-shadow: 0 6px 16px rgba(234, 179, 8, 0.6); }
+}
+
+@media (max-width: 640px) {
+  .menu-guide-pointer {
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    margin-right: 6px;
+  }
+}
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-content">
+    <div class="brand-logo">
+      <button class="btn-hamburger" id="hamburgerBtn" onclick="toggleDrawer()" title="メニューを開く">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      
+      <div>
+        <h1>AI Company 統合ポータル</h1>
+        <div class="tagline">10月 DCM SRP施策 / 代理店別早見表 / 詳細現場報告フォーマット</div>
+      </div>
+    </div>
+
+    <!-- ハンバーガーメニュー案内 (直下に配置) -->
+    <div class="menu-guide-below" onclick="toggleDrawer()">
+      <i class="fa-solid fa-hand-point-up"></i> 左上の［ ☰ メニュー ］をタップしてページ切替
+    </div>
+
+    <div class="header-actions">
+      <!-- スプレッドシートへの直接リンクボタン -->
+      <a href="https://docs.google.com/spreadsheets/d/1cxzXOD8T0cXfWhc1gJx56nBFJjFsjljCyDxW9x6G13g/edit?usp=sharing" target="_blank" class="btn-action" style="background: rgba(16, 185, 129, 0.25); border-color: rgba(16, 185, 129, 0.4);">
+        <i class="fa-solid fa-file-excel"></i> 📊 MD担当巡回シート
+      </a>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- TAB 1: AI Company ダッシュボード -->
+  <div id="dashboard" class="tab-content active">
+
+    <!-- 📢 今月の最重要アクション ガイド (Top Notification) -->
+    <div class="card" style="border-left: 5px solid #2563EB; background: linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%); margin-bottom: 24px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);">
+      <div class="card-title" style="color: #1D4ED8; justify-content: space-between; border-bottom: 1px solid #BFDBFE; padding-bottom: 10px;">
+        <span style="font-weight: 800; font-size: 1.05rem;"><i class="fa-solid fa-bullhorn text-blue-600"></i> 📢 10月最重要現場アクション ＆ フォーカス方針</span>
+        <span class="pill" style="background: #DBEAFE; color: #1E40AF; font-size: 0.78rem; font-weight: 800; padding: 3px 10px; border-radius: 999px;">10月SRP方針</span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-top: 12px;">
+        <div style="background: #FFFFFF; padding: 14px 16px; border-radius: var(--radius-md); border: 1px solid #DBEAFE;">
+          <div style="font-weight: 800; color: #1E3A8A; margin-bottom: 6px; font-size: 0.9rem;">
+            <i class="fa-solid fa-circle-check" style="color: #2563EB;"></i> 1. ドコモ代理店 SRP認知ヒアリング
+          </div>
+          <p style="font-size: 0.82rem; color: var(--text-main); line-height: 1.6; margin: 0;">
+            全22パターンのドコモ直営・二次代理店へのSRP認知状況を確認。支店・本部メールやBBSの確認状況を丁寧にヒアリング。
+          </p>
+        </div>
+
+        <div style="background: #FFFFFF; padding: 14px 16px; border-radius: var(--radius-md); border: 1px solid #DBEAFE;">
+          <div style="font-weight: 800; color: #1E3A8A; margin-bottom: 6px; font-size: 0.9rem;">
+            <i class="fa-solid fa-circle-check" style="color: #2563EB;"></i> 2. FFF8 インセンティブ施策の周知確認
+          </div>
+          <p style="font-size: 0.82rem; color: var(--text-main); line-height: 1.6; margin: 0;">
+            店長・副店長ともに提案資料の内容を把握できているか、代理店握り施策の認知度と販売意欲をヒアリング。
+          </p>
+        </div>
+
+        <div style="background: #FFFFFF; padding: 14px 16px; border-radius: var(--radius-md); border: 1px solid #DBEAFE;">
+          <div style="font-weight: 800; color: #B91C1C; margin-bottom: 6px; font-size: 0.9rem;">
+            <i class="fa-solid fa-triangle-exclamation" style="color: #DC2626;"></i> 3. 現場3大禁止ルールの徹底
+          </div>
+          <p style="font-size: 0.82rem; color: var(--text-main); line-height: 1.6; margin: 0;">
+            <b>金額トーク絶対NG</b>（例外:モバイルコム）、<b>専門用語NG</b>（「サムスンの施策」と言い換え）、<b>常勤FSM対象</b>を厳守。
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 特設リンクカード: MD担当巡回店舗リスト・進捗KPI管理 -->
+    <a href="https://docs.google.com/spreadsheets/d/1cxzXOD8T0cXfWhc1gJx56nBFJjFsjljCyDxW9x6G13g/edit?usp=sharing" target="_blank" class="md-sheet-card">
+      <div class="md-sheet-info">
+        <div class="md-sheet-icon"><i class="fa-solid fa-table-cells"></i></div>
+        <div>
+          <div class="md-sheet-title">📊 MD担当巡回店舗リスト・進捗KPI管理</div>
+          <div class="md-sheet-desc">Google スプレッドシート（巡回スケジュール・進捗管理・リアルタイム実績データ）</div>
+        </div>
+      </div>
+      <div class="btn-md-go">
+        スプレッドシートを開く <i class="fa-solid fa-arrow-up-right-from-square"></i>
+      </div>
+    </a>
+
+    <!-- クリック（タップ）可能な KPI カード群 -->
+    
+    <!-- 🎁 2026年 月次KPI個別達成報酬 ガイド (MD向け) -->
+    <div class="card" style="border-top: 4px solid #EAB308; background: var(--bg-card); margin-bottom: 24px;">
+      <div class="card-title" style="color: #A16207; justify-content: space-between; border-bottom-color: #FEF08A;">
+        <span><i class="fa-solid fa-gift"></i> 🎁 2026年 月次KPI個別達成報酬 ガイド（マーチャンダイザー向け）</span>
+        <span class="pill pill-amber" style="font-weight: 900; font-size: 0.88rem; background: #FEF3C7; color: #92400E; border: 1px solid #FDE68A; padding: 4px 12px; border-radius: 999px;">報奨金: 10,000円 / 月 (税別)</span>
+      </div>
+
+      <!-- 概要説明バー -->
+      <div style="background: #FEFCE8; border: 1px solid #FEF08A; padding: 14px 18px; border-radius: var(--radius-md); margin-bottom: 18px; font-size: 0.88rem; color: #713F12; line-height: 1.6;">
+        <b>対象:</b> サムスン事務局 マーチャンダイザー（MD）<br>
+        <b>内容:</b> 当月の【基本条件】をすべてクリアし、更に【対象項目】を3項目以上（※新人は入社月含む3ヵ月まで2項目でOK）達成したMDに報奨金を支給！<br>
+        <b>支給時期:</b> 月次（当月分を翌15日または月末払いの給与にて支給）
+      </div>
+
+      <div class="grid-2">
+        <!-- 基本条件 (5項目) -->
+        <div style="background: var(--bg-subtle); padding: 18px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+          <h3 style="font-size: 0.95rem; font-weight: 900; color: #B91C1C; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+            <i class="fa-solid fa-square-check"></i> 【基本条件】すべて達成が必須
+          </h3>
+          <ol style="padding-left: 18px; font-size: 0.84rem; line-height: 1.7; color: var(--text-main);">
+            <li><b>当月稼働日の無欠勤・無遅刻・無早退</b><br>
+              <span style="font-size: 0.76rem; color: var(--text-muted);">＜カウント外要項＞事前申請(1週間前)ある有休 / 本人・同居家族の急病・事故(診断書・処方箋提出有) / 忌引(要報告)</span>
+            </li>
+            <li><b>シフトーク入力ミス 月10箇所未満</b><br>
+              <span style="font-size: 0.76rem; color: var(--text-muted);">(店舗マスタ、報告書、交通費、諸経費、打刻等)</span>
+            </li>
+            <li><b>KPI: 担当店舗全巡回 ＆ 巡回率 3.3 以上</b></li>
+            <li><b>KPI: トレカバ 40%以上 ＆ Wearableトレカバ 20%以上</b></li>
+            <li><b style="color: #B91C1C;">業務端末の破損・紛失がないこと</b> <span style="font-size: 0.76rem; color: var(--text-muted);">(自身の責でない破損は例外)</span></li>
+          </ol>
+        </div>
+
+        <!-- 対象項目 (A〜G 7項目) -->
+        <div style="background: var(--bg-subtle); padding: 18px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+          <h3 style="font-size: 0.95rem; font-weight: 900; color: #15803D; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
+            <span><i class="fa-solid fa-trophy"></i> 【対象項目】3項目以上達成で条件クリア</span>
+            <span style="font-size: 0.74rem; font-weight: 800; color: #15803D; background: #DCFCE7; padding: 2px 8px; border-radius: 999px;">※新人は2項目でOK</span>
+          </h3>
+          <ul style="list-style: none; font-size: 0.83rem; line-height: 1.75; color: var(--text-main); padding: 0;">
+            <li style="padding: 3px 0; border-bottom: 1px dashed var(--border-color);"><b>[A]</b> 当月稼働日を全出勤 (有休・早退・遅刻 全てなし)</li>
+            <li style="padding: 3px 0; border-bottom: 1px dashed var(--border-color);"><b>[B]</b> 当月確認テスト点数 (SEJ実施月⇒<b>全国平均以上</b> / 無い月⇒<b>40点以上</b>/50点満点)</li>
+            <li style="padding: 3px 0; border-bottom: 1px dashed var(--border-color);"><b>[C]</b> 当月の<b>巡回率 3.5 以上</b></li>
+            <li style="padding: 3px 0; border-bottom: 1px dashed var(--border-color);"><b>[D]</b> 報告ベース<b>HipShare獲得数 2件以上</b><br>
+              <span style="font-size: 0.75rem; color: var(--text-muted);">※店舗/FSM名/新規or機変/新旧機種/VOC/写真必須・シフトーク記載＆別途SV報告 (Galaxy→GalaxyもOK)</span>
+            </li>
+            <li style="padding: 3px 0; border-bottom: 1px dashed var(--border-color);"><b>[E]</b> 集合トレーニング獲得 <b>4件</b> (朝礼・終礼・店休日のみ2名以上)</li>
+            <li style="padding: 3px 0; border-bottom: 1px dashed var(--border-color);"><b>[F]</b> シフトーク入力ミス <b>月1箇所未満</b> (店舗マスタ/報告書/交通費/諸経費/打刻等)</li>
+            <li style="padding: 3px 0;"><b>[G]</b> <b>KPI: トレカバ 45% 以上</b></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card" onclick="navigateToTab('agency-table')" title="タップして代理店別早見表を開く">
+        <div class="kpi-icon" style="background: rgba(37,99,235,0.15); color: #2563EB;"><i class="fa-solid fa-building-user"></i></div>
+        <div style="flex:1;">
+          <div class="kpi-val">21 法人</div>
+          <div class="kpi-label">ヒアリング対象代理店（全21社）</div>
+          <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+        </div>
+      </div>
+
+      <div class="kpi-card" onclick="navigateToTab('srp-guide')" title="タップしてSRP現場ガイドを開く">
+        <div class="kpi-icon" style="background: rgba(21,128,61,0.15); color: #15803D;"><i class="fa-solid fa-circle-check"></i></div>
+        <div style="flex:1;">
+          <div class="kpi-val">認知あり</div>
+          <div class="kpi-label">高積極度・即時周知推進</div>
+          <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 75%; background: #15803D;"></div></div>
+        </div>
+      </div>
+
+      <div class="kpi-card" onclick="navigateToTab('srp-guide')" title="タップしてFFF8還元ガイドを開く">
+        <div class="kpi-icon" style="background: rgba(124,58,237,0.15); color: #7C3AED;"><i class="fa-solid fa-gem"></i></div>
+        <div style="flex:1;">
+          <div class="kpi-val">FFF8還元</div>
+          <div class="kpi-label">代理店握り＆還元施策認知確認</div>
+          <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 85%; background: #7C3AED;"></div></div>
+        </div>
+      </div>
+
+      <div class="kpi-card" onclick="navigateToTab('srp-guide')" title="タップして現場3大禁止ルールを開く">
+        <div class="kpi-icon" style="background: rgba(180,83,9,0.15); color: #B45309;"><i class="fa-solid fa-shield-halved"></i></div>
+        <div style="flex:1;">
+          <div class="kpi-val">3大ルール</div>
+          <div class="kpi-label">金額トークNG / 専門用語NG 徹底</div>
+          <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%; background: #B45309;"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title" style="color: var(--brand-blue);"><i class="fa-solid fa-chart-line"></i> AI Company 施策推進ステータス</div>
+        <ul style="list-style: none; font-size: 0.9rem;">
+          <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color); display:flex; justify-content:space-between; cursor:pointer;" onclick="navigateToTab('agency-table')">
+            <span><i class="fa-solid fa-check" style="color:#15803D;"></i> 広域主要代理店（コネクシオ/KCS/MXM/TGAIA/ITX/ラネット）</span>
+            <span class="pill pill-green">9/1スタート完了</span>
+          </li>
+          <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color); display:flex; justify-content:space-between; cursor:pointer;" onclick="navigateToTab('agency-table')">
+            <span><i class="fa-solid fa-check" style="color:#15803D;"></i> 地場代理店（9法人ヒアリング展開）</span>
+            <span class="pill pill-green">通常ルール適用中</span>
+          </li>
+          <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color); display:flex; justify-content:space-between; cursor:pointer;" onclick="navigateToTab('agency-table')">
+            <span><i class="fa-solid fa-star" style="color:#B45309;"></i> 特例代理店（モバイルコム）</span>
+            <span class="pill pill-purple">💡【例外】金額トークOK</span>
+          </li>
+          <li style="padding: 10px 0; display:flex; justify-content:space-between; cursor:pointer;" onclick="navigateToTab('agency-table')">
+            <span><i class="fa-solid fa-ban" style="color:#B91C1C;"></i> 不要代理店12法人の削除整理</span>
+            <span class="pill pill-red">最新マスタ適用済</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="color: var(--brand-indigo);"><i class="fa-solid fa-bullhorn"></i> ボーダー現場チーム要請・連絡事項</div>
+        <div style="background: var(--bg-main); padding: 14px; border-radius: var(--radius-md); font-size: 0.88rem; margin-bottom: 10px; cursor:pointer;" onclick="window.open('https://docs.google.com/spreadsheets/d/1cxzXOD8T0cXfWhc1gJx56nBFJjFsjljCyDxW9x6G13g/edit?usp=sharing', '_blank')">
+          <b>📊 「MD担当巡回店舗リスト・進捗KPI管理」連携:</b><br>
+          緑色の特設バナーカードまたはヘッダー右上のボタンから、リアルタイム共有スプレッドシートへワンタップで移動できます。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: 項目別 現場報告フォーマット -->
+  <div id="detail-format" class="tab-content">
+    <div class="card" style="border-top: 4px solid var(--brand-indigo);">
+      <div class="card-title" style="color: var(--brand-indigo); justify-content: space-between;">
+        <span><i class="fa-solid fa-cubes"></i> 📱 全セクション一括 コピー枠</span>
+        <button class="btn-copy" onclick="copyText('txt-detail-full', this)"><i class="fa-regular fa-copy"></i> 全項目を一括コピー</button> <button class="btn-smart-gen" onclick="openSmartCopyModal('txt-detail-full')"><i class="fa-solid fa-wand-magic-sparkles"></i> 編集してコピー</button>
+      </div>
+      <div class="copy-box">
+        <div class="copy-text" id="txt-detail-full">【自社】
+・現場状況・主な客層：
+・在庫ステータス（カラー/容量欠品等）：［潤沢／一部欠品／欠品多数］
+・店頭での課題（案内不足・他社比較での弱み等）：
+・既存折りたたみユーザーの動き（iPhone Duoへの流出リスク等）：
+・改善策／アクション：
+【購入者インタビュー（Hip Share獲得事例）】※該当時のみ
+・対応スタッフ名：（FSM／Ambassador）
+・前利用端末：
+・予約／購入端末：
+・購入の決め手・動機：
+------------------------------------------------
+【他社動向】
+Apple（iPhone Duo、18、17シリーズ）
+＜iPhone Duo 予約状況＞※折りたたみ／FFF8競合
+・予約件数（店舗把握分・件）：
+・予約者の客層・前利用端末：［iPhone／Galaxy折りたたみ／Galaxy（その他）／その他Android］
+・予約の決め手・お客様の反応：
+・FFF8との比較検討：［あり／なし］
+・比較されたポイント（サイズ・重さ・価格・カメラ・画面の折り目・耐久性等）：
+・FFF8が選ばれた理由／選ばれなかった理由：
+・入荷見込み・店頭での案内方法：
+＜iPhone 18／17シリーズ＞
+・iPhone 18 Pro/18 Pro Max販売状況・反響：
+・店頭での動き・お客様の反応：
+・18シリーズ在庫状況：［潤沢／品薄／欠品］
+・17シリーズ在庫状況：［潤沢／品薄／欠品］
+・iPhone 16在庫状況：［潤沢／品薄／欠品］
+Google（Pixel 11シリーズ／10a）
+・店頭での動き・お客様の反応：
+・現場での勢いやフック（キャンペーン・施策等）：
+・Pixel 11シリーズ在庫状況：［潤沢／品薄／欠品］
+・Pixel 10a在庫状況：［潤沢／品薄／欠品］
+その他メーカー（メーカー名：）※該当時のみ
+・店頭での動き・お客様の反応：
+・現場での勢いやフック：
+------------------------------------------------
+【トレーニング実施報告】
+・利用資料：
+・実施形式：［対面TR／集合型］
+・トレーニング内容：
+・受講FSMの反応・現場の声（FSM VOC）：
+------------------------------------------------
+【フリーエリア（Ambassador・コンテスト・共有事項）】※該当時のみ
+・Galaxy Coach体験（貸与端末）：［完了／不可］
+・Ambassador活動状況（1期生・2期生進捗/不満・不明点等）：
+・その他共有事項：</div>
+      </div>
+    </div>
+
+    <!-- 項目別 個別コピーカード -->
+    <div style="margin-bottom: 20px; font-weight: 800; font-size: 1.1rem;">
+      <i class="fa-solid fa-list-check" style="color: var(--brand-blue);"></i> 項目別 個別コピペカード（必要な項目だけ選んでコピー）
+    </div>
+
+    <div class="grid-2">
+      <!-- 1. 【自社】 -->
+      <div class="card" style="border-top: 4px solid var(--brand-blue);">
+        <div class="card-title" style="color: var(--brand-blue); justify-content: space-between;">
+          <span><i class="fa-solid fa-mobile"></i> 1. 【自社】報告フォーマット</span>
+          <button class="btn-copy" onclick="copyText('txt-sec-jisya', this)"><i class="fa-regular fa-copy"></i> 【自社】をコピー</button> <button class="btn-smart-gen" onclick="openSmartCopyModal('txt-sec-jisya')"><i class="fa-solid fa-wand-magic-sparkles"></i> 編集してコピー</button>
+        </div>
+        <div class="copy-box">
+          <div class="copy-text" id="txt-sec-jisya">【自社】
+・現場状況・主な客層：
+・在庫ステータス（カラー/容量欠品等）：［潤沢／一部欠品／欠品多数］
+・店頭での課題（案内不足・他社比較での弱み等）：
+・既存折りたたみユーザーの動き（iPhone Duoへの流出リスク等）：
+・改善策／アクション：
+【購入者インタビュー（Hip Share獲得事例）】※該当時のみ
+・対応スタッフ名：（FSM／Ambassador）
+・前利用端末：
+・予約／購入端末：
+・購入の決め手・動機：</div>
+        </div>
+      </div>
+
+      <!-- 2. 【他社】 -->
+      <div class="card" style="border-top: 4px solid #EA580C;">
+        <div class="card-title" style="color: #EA580C; justify-content: space-between;">
+          <span><i class="fa-solid fa-store"></i> 2. 【他社】報告フォーマット</span>
+          <button class="btn-copy" onclick="copyText('txt-sec-tasha', this)"><i class="fa-regular fa-copy"></i> 【他社】をコピー</button> <button class="btn-smart-gen" onclick="openSmartCopyModal('txt-sec-tasha')"><i class="fa-solid fa-wand-magic-sparkles"></i> 編集してコピー</button>
+        </div>
+        <div class="copy-box">
+          <div class="copy-text" id="txt-sec-tasha">【他社動向】
+Apple（iPhone Duo、18、17シリーズ）
+＜iPhone Duo 予約状況＞※折りたたみ／FFF8競合
+・予約件数（店舗把握分・件）：
+・予約者の客層・前利用端末：［iPhone／Galaxy折りたたみ／Galaxy（その他）／その他Android］
+・予約の決め手・お客様の反応：
+・FFF8との比較検討：［あり／なし］
+・比較されたポイント（サイズ・重さ・価格・カメラ・画面の折り目・耐久性等）：
+・FFF8が選ばれた理由／選ばれなかった理由：
+・入荷見込み・店頭での案内方法：
+＜iPhone 18／17シリーズ＞
+・iPhone 18 Pro/18 Pro Max販売状況・反響：
+・店頭での動き・お客様の反応：
+・18シリーズ在庫状況：［潤沢／品薄／欠品］
+・17シリーズ在庫状況：［潤沢／品薄／欠品］
+・iPhone 16在庫状況：［潤沢／品薄／欠品］
+Google（Pixel 11シリーズ／10a）
+・店頭での動き・お客様の反応：
+・現場での勢いやフック（キャンペーン・施策等）：
+・Pixel 11シリーズ在庫状況：［潤沢／品薄／欠品］
+・Pixel 10a在庫状況：［潤沢／品薄／欠品］
+その他メーカー（メーカー名：）※該当時のみ
+・店頭での動き・お客様の反応：
+・現場での勢いやフック：</div>
+        </div>
+      </div>
+
+      <!-- 3. 【トレーニング実施報告】 -->
+      <div class="card" style="border-top: 4px solid var(--success-text);">
+        <div class="card-title" style="color: var(--success-text); justify-content: space-between;">
+          <span><i class="fa-solid fa-graduation-cap"></i> 3. 【トレーニング実施報告】</span>
+          <button class="btn-copy" onclick="copyText('txt-sec-tr', this)"><i class="fa-regular fa-copy"></i> 【トレーニング】をコピー</button> <button class="btn-smart-gen" onclick="openSmartCopyModal('txt-sec-tr')"><i class="fa-solid fa-wand-magic-sparkles"></i> 編集してコピー</button>
+        </div>
+        <div class="copy-box">
+          <div class="copy-text" id="txt-sec-tr">【トレーニング実施報告】
+・利用資料：
+・実施形式：［対面TR／集合型］
+・トレーニング内容：
+・受講FSMの反応・現場の声（FSM VOC）：</div>
+        </div>
+      </div>
+
+      <!-- 4. 【フリーエリア】 -->
+      <div class="card" style="border-top: 4px solid var(--purple-main);">
+        <div class="card-title" style="color: var(--purple-main); justify-content: space-between;">
+          <span><i class="fa-solid fa-pen-to-square"></i> 4. 【フリーエリア】フォーマット</span>
+          <button class="btn-copy" onclick="copyText('txt-sec-free', this)"><i class="fa-regular fa-copy"></i> 【フリーエリア】をコピー</button> <button class="btn-smart-gen" onclick="openSmartCopyModal('txt-sec-free')"><i class="fa-solid fa-wand-magic-sparkles"></i> 編集してコピー</button>
+        </div>
+        <div class="copy-box">
+          <div class="copy-text" id="txt-sec-free">【フリーエリア（Ambassador・コンテスト・共有事項）】※該当時のみ
+・Galaxy Coach体験（貸与端末）：［完了／不可］
+・Ambassador活動状況（1期生・2期生進捗/不満・不明点等）：
+・その他共有事項：</div>
+        </div>
+      </div>
+
+
+    </div>
+
+    <!-- 記入サンプル -->
+    <div class="card" style="border-top: 4px solid var(--success-text);">
+      <div class="card-title" style="color: var(--success-text); justify-content: space-between;">
+        <span><i class="fa-solid fa-circle-info"></i> 💡 記入サンプル文（全体の参考に）</span>
+        <button class="btn-copy" onclick="copyText('txt-detail-sample', this)"><i class="fa-regular fa-copy"></i> サンプル文をコピー</button> <button class="btn-smart-gen" onclick="openSmartCopyModal('txt-detail-sample')"><i class="fa-solid fa-wand-magic-sparkles"></i> 編集してコピー</button>
+      </div>
+
+      <div class="copy-box">
+        <div class="copy-text" id="txt-detail-sample">【自社】川棚店
+・現場状況・主な客層：シニア層が来店客の主流を占めており、折りたたみスマホ（Fold8等）への問い合わせや関心は皆無。直近の自社端末販売実績はエントリーモデル（A25）のみにとどまる。また、店長のSRP認知および現場FSMの販売コンテスト認知はいずれも皆無の状態。代理店の販売方針（他社最優先）が強く影響しており、自社優先度の低迷はやむを得ない店舗環境である。
+・在庫ステータス（カラー/容量欠品等）：［ Fold8は受注発注運用。一部カラー・容量にて欠品が発生中 ］
+・店頭での課題（案内不足・他社比較での弱み等）：FSMへの販売コンテスト認知が行き届いておらず、端末価値の訴求ではなく単なる「割引施策頼み」の接客に終始している。代理店方針も重なり、店舗全体として自社取り組みへの優先度が極めて低い点が課題。
+・改善策／アクション：S26シリーズやFold8に興味を示している特定FSMが存在するため、製品の強みや魅力を個別レクチャーしファン化を推進。個人レベルでの関心を高め、接客時の有効なフックとして活用できるよう継続的に働きかける。
+
+【購入者インタビュー（Hip Share獲得事例）】※該当時のみ
+・対応スタッフ名：ドコモスタッフ (自店FSM)
+・前利用端末：iPhone 15 Pro
+・予約／購入端末：Galaxy Fold8 (512GB / ジェットブラック)
+・購入の決め手・動機：ドコモスタッフ本人がFold8の大画面マルチタスク機能や折りたたみ構造の利便性に感動し、業務およびプライベート用として自ら購入。スタッフ自身のリアルな愛用体験と購入動機が、店頭接客において最も説得力のある強力な推奨フックとなっている。
+
+------------------------------------------------
+
+【他社動向】
+Apple（iPhone 18、17シリーズ）
+・iPhone 18 Pro/18 Pro Max販売状況・反響：［ Pro: 一部ヘビーユーザーより購入・予約あり ／ Pro Max: 高価格帯のため動きは落ち着いている ］
+・店頭での動き・お客様の反応：新製品発売を迎えているものの、価格高騰の影響を受けFSM側もユーザーへの積極的な買い替え提案に躊躇している状況。
+・18シリーズ在庫状況：［ 一部欠品 ］
+・17シリーズ在庫状況：［ iPhone 17は枯渇、17eも潤沢ではない ］
+・iPhone 16在庫状況：［ 潤沢 ］
+
+Google（Pixel 11シリーズ ／ 10a）
+・店頭での動き・お客様の反応：代理店方針に基づき、店頭で最優先端末として積極案内を展開。ブランド認知度の向上も手伝って顧客アプローチが容易であり、店舗での販売実績も非常に好調に推移している。
+・現場での勢いやフック（キャンペーン・施策等）：他社乗り換え時のポイント還元施策および強力な実質価格訴求POPを前面に出すことで高い立ち止まり率を維持。
+・Pixel 11シリーズ在庫状況：［ 潤沢 ］
+・Pixel 10a 在庫状況：［ 潤沢 ］
+
+その他メーカー(　　　　　) ※該当時のみ
+・店頭での動き・お客様の反応：
+・現場での勢いやフック：
+
+------------------------------------------------
+
+【トレーニング実施報告】
+・利用資料：［ 実機デモ ］
+・実施形式：［ 対面TR ］
+・トレーニング内容：
+  - Gemini Liveを活用したリアルタイム操作案内およびメッセージ作成・送信手順のレクチャーを実施。
+  - シニア客の来店頻度が高い店舗特性を踏まえ、操作質問へのAI活用サポート手順を実演指導。
+・受講FSMの反応・現場の声（FSM VOC）：
+  - 「シニア客からの操作相談に対するサポート手段としてGemini Liveは非常に有効であり、応対負荷軽減につながる」
+  - 「ハンズフリーで操作案内を行える利便性が高く、現場接客での活用価値を実感した」
+
+------------------------------------------------
+
+【フリーエリア（Ambassador・コンテスト・共有事項）】※該当時のみ
+・Galaxy Coach体験（貸与端末）：［ 完了 ］
+・Ambassador活動状況（1期生・2期生進捗/不満・不明点等）：店舗の代理店方針（他社優先）に対し、Fold8を購入したドコモスタッフの実体験フックを活用しつつ、特定FSMへのAI機能体験レクチャーを強化中。
+・その他共有事項：シニア層対応におけるGemini Live活用事例を近隣店舗へも共有予定。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: DCM SRP施策 現場ガイド -->
+  <div id="srp-guide" class="tab-content">
+    <!-- 現場3大ルール -->
+    <div class="card" style="border-left: 5px solid var(--danger-text);">
+      <div class="card-title" style="color: var(--danger-text);"><i class="fa-solid fa-triangle-exclamation"></i> 🚨 現場で「絶対やってはいけない」3大ルール</div>
+      <div class="grid-3">
+        <div style="background: var(--danger-bg); padding: 14px; border-radius: var(--radius-md);">
+          <b style="color: var(--danger-text);">1. 金額トーク絶対NG</b>
+          <p style="font-size: 0.85rem; margin-top:4px;">還元額やインセンティブの金額は禁止！（※例外: モバイルコムのみOK）</p>
+        </div>
+        <div style="background: var(--danger-bg); padding: 14px; border-radius: var(--radius-md);">
+          <b style="color: var(--danger-text);">2. 専門用語絶対NG</b>
+          <p style="font-size: 0.85rem; margin-top:4px;">「SRP」「目標ポイント」はNG。「サムスンの施策」「目標台数」に言い換える！</p>
+        </div>
+        <div style="background: var(--danger-bg); padding: 14px; border-radius: var(--radius-md);">
+          <b style="color: var(--danger-text);">3. 非常勤スタッフNG</b>
+          <p style="font-size: 0.85rem; margin-top:4px;">単発イベントスタッフは不可。常勤FSM（店長・副店長・常勤者）のみ対象！</p>
+        </div>
+      </div>
+    </div>
+
+        <!-- 📝 マスタ項目別 入力・コメントルール カード -->
+    <div class="card" style="border-left: 5px solid #2563EB; background: var(--bg-card); margin-bottom: 24px;">
+      <div class="card-title" style="color: #1D4ED8; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+        <i class="fa-solid fa-list-check"></i> 📝 10月マスタ項目別 入力・コメントルール
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-top: 10px;">
+        
+        <div style="background: var(--bg-subtle); padding: 12px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-weight: 800; font-size: 0.88rem; color: var(--text-main);">・ SRP認知施策</span>
+          <span style="background: #FEE2E2; color: #B91C1C; font-weight: 800; padding: 3px 10px; border-radius: 999px; font-size: 0.78rem; border: 1px solid #FCA5A5;">▶ コメント必須</span>
+        </div>
+
+        <div style="background: var(--bg-subtle); padding: 12px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-weight: 800; font-size: 0.88rem; color: var(--text-main);">・ MNP施策</span>
+          <span style="background: #FEF3C7; color: #92400E; font-weight: 800; padding: 3px 10px; border-radius: 999px; font-size: 0.78rem; border: 1px solid #FDE68A;">▶ ✕ の場合記入</span>
+        </div>
+
+        <div style="background: var(--bg-subtle); padding: 12px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-weight: 800; font-size: 0.88rem; color: var(--text-main);">・ FFF8インセ施策</span>
+          <span style="background: #FEE2E2; color: #B91C1C; font-weight: 800; padding: 3px 10px; border-radius: 999px; font-size: 0.78rem; border: 1px solid #FCA5A5;">▶ コメント必須</span>
+        </div>
+
+        <div style="background: var(--bg-subtle); padding: 12px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-weight: 800; font-size: 0.88rem; color: var(--text-main);">・ FFF8MNP施策</span>
+          <span style="background: #FEF3C7; color: #92400E; font-weight: 800; padding: 3px 10px; border-radius: 999px; font-size: 0.78rem; border: 1px solid #FDE68A;">▶ ✕ の場合記入</span>
+        </div>
+
+        <div style="background: var(--bg-subtle); padding: 12px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-weight: 800; font-size: 0.88rem; color: var(--text-main);">・ 販売コンテスト</span>
+          <span style="background: #F1F5F9; color: #64748B; font-weight: 800; padding: 3px 10px; border-radius: 999px; font-size: 0.78rem; border: 1px solid #CBD5E1;">▶ 入力無し</span>
+        </div>
+
+        <div style="background: var(--bg-subtle); padding: 12px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-weight: 800; font-size: 0.88rem; color: var(--text-main);">・ S26・A57機変施策</span>
+          <span style="background: #FEF3C7; color: #92400E; font-weight: 800; padding: 3px 10px; border-radius: 999px; font-size: 0.78rem; border: 1px solid #FDE68A;">▶ ✕ の場合記入</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SRP施策 用 コピペテンプレート -->
+    <div class="card">
+      <div class="card-title" style="color: var(--brand-blue);"><i class="fa-solid fa-copy"></i> SRP施策（メーカー施策）用 コピペテンプレート</div>
+      
+      <div class="grid-2">
+        <div class="copy-box">
+          <div class="copy-header">
+            <span class="pill pill-green">認知あり (サンプル文)</span>
+            <button class="btn-copy" onclick="copyText('txt-srp-ok', this)"><i class="fa-regular fa-copy"></i> コピー</button> <button class="btn-smart-gen" onclick="openSmartCopyModal('txt-srp-ok')"><i class="fa-solid fa-wand-magic-sparkles"></i> 編集してコピー</button>
+          </div>
+          <div class="copy-text" id="txt-srp-ok">【認知】あり / 【話題】代理店握り施策およびFFF8還元施策の件認知あり。 / 【温度感】高く積極的。 / 【スタッフ周知】朝礼にて全員に周知済み。</div>
+        </div>
+
+        <div class="copy-box">
+          <div class="copy-header">
+            <span class="pill pill-green">認知あり (フォーマットのみ)</span>
+            <button class="btn-copy" onclick="copyText('txt-srp-ok-fmt', this)"><i class="fa-regular fa-copy"></i> コピー</button> <button class="btn-smart-gen" onclick="openSmartCopyModal('txt-srp-ok-fmt')"><i class="fa-solid fa-wand-magic-sparkles"></i> 編集してコピー</button>
+          </div>
+          <div class="copy-text" id="txt-srp-ok-fmt">【認知】あり / 【話題】[施策名/還元施策]認知あり / 【温度感】[高い・普通・低い] / 【スタッフ周知】[周知済・今後周知予定]</div>
+        </div>
+
+        <div class="copy-box">
+          <div class="copy-header">
+            <span class="pill pill-red">認知なし (サンプル文)</span>
+            <button class="btn-copy" onclick="copyText('txt-srp-ng', this)"><i class="fa-regular fa-copy"></i> コピー</button> <button class="btn-smart-gen" onclick="openSmartCopyModal('txt-srp-ng')"><i class="fa-solid fa-wand-magic-sparkles"></i> 編集してコピー</button>
+          </div>
+          <div class="copy-text" id="txt-srp-ng">【認知】なし / 【状況】本部からのメール未確認。 / 【対応】社内BBSおよびMD部案内の確認を店長に依頼。</div>
+        </div>
+
+        <div class="copy-box">
+          <div class="copy-header">
+            <span class="pill pill-red">認知なし (フォーマットのみ)</span>
+            <button class="btn-copy" onclick="copyText('txt-srp-ng-fmt', this)"><i class="fa-regular fa-copy"></i> コピー</button> <button class="btn-smart-gen" onclick="openSmartCopyModal('txt-srp-ng-fmt')"><i class="fa-solid fa-wand-magic-sparkles"></i> 編集してコピー</button>
+          </div>
+          <div class="copy-text" id="txt-srp-ng-fmt">【認知】なし / 【状況】[本部未確認・BBS未読など] / 【対応】[資料提示/支店案内確認を依頼/MD部周知案内促す]</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FFF8インセンティブ還元用 コピペテンプレート -->
+    <div class="card" style="border-top: 4px solid var(--purple-text); margin-top: 24px;">
+      <div class="card-title" style="color: var(--purple-text);"><i class="fa-solid fa-mobile-screen"></i> FFF8インセンティブ還元用 コピペテンプレート</div>
+
+      <div class="grid-2">
+        <div class="copy-box">
+          <div class="copy-header">
+            <span class="pill pill-purple">📱 FFF8還元 認知あり (サンプル文)</span>
+            <button class="btn-copy" onclick="copyText('txt-fff8-ok', this)"><i class="fa-regular fa-copy"></i> コピー</button> <button class="btn-smart-gen" onclick="openSmartCopyModal('txt-fff8-ok')"><i class="fa-solid fa-wand-magic-sparkles"></i> 編集してコピー</button>
+          </div>
+          <div class="copy-text" id="txt-fff8-ok">【FFF8還元施策】認知あり / 【認知範囲】店長・副店長ともに提案資料の内容を把握済み。 / 【代理店握り施策】認知あり。 / 【販売意欲】高く注力体制完了。</div>
+        </div>
+
+        <div class="copy-box">
+          <div class="copy-header">
+            <span class="pill pill-purple">📱 FFF8還元 認知あり (フォーマットのみ)</span>
+            <button class="btn-copy" onclick="copyText('txt-fff8-ok-fmt', this)"><i class="fa-regular fa-copy"></i> コピー</button> <button class="btn-smart-gen" onclick="openSmartCopyModal('txt-fff8-ok-fmt')"><i class="fa-solid fa-wand-magic-sparkles"></i> 編集してコピー</button>
+          </div>
+          <div class="copy-text" id="txt-fff8-ok-fmt">【FFF8還元施策】認知あり / 【認知範囲】[店長・副店長/スタッフ共有済] / 【代理店握り施策】[認知あり/資料確認済] / 【販売意欲】[高い/普通/低い]</div>
+        </div>
+
+        <div class="copy-box">
+          <div class="copy-header">
+            <span class="pill pill-red">🔴 FFF8還元 認知なし (サンプル文)</span>
+            <button class="btn-copy" onclick="copyText('txt-fff8-ng', this)"><i class="fa-regular fa-copy"></i> コピー</button> <button class="btn-smart-gen" onclick="openSmartCopyModal('txt-fff8-ng')"><i class="fa-solid fa-wand-magic-sparkles"></i> 編集してコピー</button>
+          </div>
+          <div class="copy-text" id="txt-fff8-ng">【FFF8還元施策】認知なし / 【状況】支店からの提案資料案内の確認漏れ。 / 【対応】代理店本部・支店からの提案資料およびFFF8施策案内の確認を店長へ依頼。</div>
+        </div>
+
+        <div class="copy-box">
+          <div class="copy-header">
+            <span class="pill pill-red">🔴 FFF8還元 認知なし (フォーマットのみ)</span>
+            <button class="btn-copy" onclick="copyText('txt-fff8-ng-fmt', this)"><i class="fa-regular fa-copy"></i> コピー</button> <button class="btn-smart-gen" onclick="openSmartCopyModal('txt-fff8-ng-fmt')"><i class="fa-solid fa-wand-magic-sparkles"></i> 編集してコピー</button>
+          </div>
+          <div class="copy-text" id="txt-fff8-ng-fmt">【FFF8還元施策】認知なし / 【状況】[案内確認漏れ/提案資料不備など] / 【対応】[資料案内確認依頼/提案資料共有]</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 5: 代理店別 早見表 -->
+  <div id="agency-table" class="tab-content">
+
+    <!-- 【補足資料】MXM二次 18法人 ＆ SRP追加店舗 マスタ補足カード -->
+    <div class="card" style="border-left: 5px solid #EAB308; background: #FEFCE8; margin-bottom: 24px;">
+      <div class="card-title" style="color: #A16207; border-bottom-color: #FEF08A;">
+        <i class="fa-solid fa-file-circle-plus"></i> 📌 【補足資料】MXM二次 18法人 ＆ SRP追加店舗入力ルール
+      </div>
+
+      <!-- SRPマスタ入力定義 -->
+      <div style="background: #FFFFFF; padding: 14px 18px; border-radius: var(--radius-md); border: 1px solid #FEF08A; margin-bottom: 16px; font-size: 0.85rem; line-height: 1.7;">
+        <strong style="color: #854D0E; font-size: 0.9rem;">📝 SRPマスタ入力区分ルール:</strong>
+        <ul style="margin-top: 6px; padding-left: 20px; color: var(--text-main);">
+          <li><span style="color: #15803D; font-weight: 800;">〇</span> → 認知あり（コメント記入）</li>
+          <li><span style="color: #B91C1C; font-weight: 800;">×</span> → ヒアリングしたけど認知なし（コメント記入）</li>
+          <li><span style="color: #C2410C; font-weight: 800;">ヒアリング不可</span> → 商談者不在等でヒアリング不可。または<b>SRP追加店舗で施策の話題にならなかった時</b>（「FSMの言及なし」とコメント記入）</li>
+          <li><span style="color: #6B21A8; font-weight: 800;">ヒアリング対象外</span> → KCS二次および下記リスト外のMXM二次（ヒアリングしない・コメント空欄）</li>
+          <li><span style="color: #475569; font-weight: 800;">SRP対象外</span> → リストにない代理店の場合（コメント空欄）</li>
+        </ul>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
+        <!-- MXM二次 18法人カード -->
+        <div style="background: #FFFFFF; padding: 16px; border-radius: var(--radius-md); border: 1px solid #FEF08A;">
+          <div style="font-weight: 800; color: #854D0E; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
+            <span>🏢 MXM二次 ヒアリング対象 18法人</span>
+            <span style="font-size: 0.75rem; background: #FEF3C7; color: #92400E; padding: 2px 8px; border-radius: 999px; font-weight: 700;">店長のみ</span>
+          </div>
+          <p style="font-size: 0.78rem; color: #B91C1C; font-weight: 700; margin-bottom: 10px;">
+            ⚠️ この18法人に含まれないMXM二次店舗は「ヒアリング対象外」です！
+          </p>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px; font-size: 0.8rem;">
+            <span class="pill" style="background:#FEF3C7; color:#92400E; border:1px solid #FDE68A;">マツハヤ・コーポレーション</span>
+            <span class="pill" style="background:#FEF3C7; color:#92400E; border:1px solid #FDE68A;">南国テレホン</span>
+            <span class="pill" style="background:#FEF3C7; color:#92400E; border:1px solid #FDE68A;">ビジネスサービス</span>
+            <span class="pill" style="background:#FEF3C7; color:#92400E; border:1px solid #FDE68A;">フレッシュサンシ</span>
+            <span class="pill" style="background:#FEF3C7; color:#92400E; border:1px solid #FDE68A;">フォルテグループ</span>
+            <span class="pill" style="background:#FEF3C7; color:#92400E; border:1px solid #FDE68A;">リアルメディア</span>
+            <span class="pill" style="background:#FEF3C7; color:#92400E; border:1px solid #FDE68A;">エイル</span>
+            <span class="pill" style="background:#FEF3C7; color:#92400E; border:1px solid #FDE68A;">米原商事</span>
+            <span class="pill" style="background:#FEF3C7; color:#92400E; border:1px solid #FDE68A;">KOSモバイル</span>
+            <span class="pill" style="background:#FEF3C7; color:#92400E; border:1px solid #FDE68A;">技研電子</span>
+            <span class="pill" style="background:#FEF3C7; color:#92400E; border:1px solid #FDE68A;">トータルサービス</span>
+            <span class="pill" style="background:#FEF3C7; color:#92400E; border:1px solid #FDE68A;">滋賀テレコム</span>
+            <span class="pill" style="background:#FEF3C7; color:#92400E; border:1px solid #FDE68A;">Minadia</span>
+            <span class="pill" style="background:#FEF3C7; color:#92400E; border:1px solid #FDE68A;">ダンク</span>
+            <span class="pill" style="background:#FEF3C7; color:#92400E; border:1px solid #FDE68A;">矢田石油</span>
+            <span class="pill" style="background:#FEF3C7; color:#92400E; border:1px solid #FDE68A;">カワシマ興産</span>
+            <span class="pill" style="background:#FEF3C7; color:#92400E; border:1px solid #FDE68A;">大幸商会</span>
+            <span class="pill" style="background:#FEF3C7; color:#92400E; border:1px solid #FDE68A;">城南興元</span>
+          </div>
+        </div>
+
+        <!-- SRP追加店舗 (12店舗) カード -->
+        <div style="background: #FFFFFF; padding: 16px; border-radius: var(--radius-md); border: 1px solid #FEF08A;">
+          <div style="font-weight: 800; color: #854D0E; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
+            <span>🏪 SRP追加店舗 (全12店舗)</span>
+            <span style="font-size: 0.75rem; background: #DCFCE7; color: #166534; padding: 2px 8px; border-radius: 999px; font-weight: 700;">店長/副店長優先</span>
+          </div>
+          <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 8px; line-height: 1.5;">
+            ※あっちから言われれば誰でもいい<br>
+            • <b>認知あり（言ってきた）</b> → <code>〇</code> ＋ コメント記入<br>
+            • <b>認知なし（言わない）</b> → <code>ヒアリング不可</code> ＋ 「FSMの言及なし」記入
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px; font-size: 0.78rem;">
+            <span class="pill" style="background:#F1F5F9; color:#334155;">日本電子</span>
+            <span class="pill" style="background:#F1F5F9; color:#334155;">永田モバイル</span>
+            <span class="pill" style="background:#F1F5F9; color:#334155;">古荘本店</span>
+            <span class="pill" style="background:#F1F5F9; color:#334155;">NTSネクスト</span>
+            <span class="pill" style="background:#F1F5F9; color:#334155;">モトシマ</span>
+            <span class="pill" style="background:#F1F5F9; color:#334155;">肥前通運</span>
+            <span class="pill" style="background:#F1F5F9; color:#334155;">アンデックスソリューション</span>
+            <span class="pill" style="background:#F1F5F9; color:#334155;">興和設備工業</span>
+            <span class="pill" style="background:#F1F5F9; color:#334155;">たかせんテレコム</span>
+            <span class="pill" style="background:#F1F5F9; color:#334155;">グッド・コム</span>
+            <span class="pill" style="background:#F1F5F9; color:#334155;">ステップコミュニケーション</span>
+            <span class="pill" style="background:#F1F5F9; color:#334155;">エコノ・テレステーション</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+            <!-- 🏢 10月SRP 代理店別 早見表 (ドコモ) -->
+        <!-- 🏢 10月SRP 代理店別 早見表 (ドコモ) -->
+    <div class="card">
+      <div class="card-title"><i class="fa-solid fa-building"></i> 📋 10月SRP ドコモ代理店 ヒアリング対象者＆注意事項早見表</div>
+      <input type="text" id="searchInput" class="search-input" placeholder="🔍 代理店名やキーワードで絞り込み... (例: コネクシオ, 店長, 直営)" onkeyup="filterTable()">
+
+      <!-- 🔍 ワンタップ絞り込みタグ ＆ クリアボタン -->
+      <div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 14px;">
+        <span style="font-size: 0.8rem; font-weight: 800; color: var(--text-muted); margin-right: 4px;"><i class="fa-solid fa-filter"></i> クイック絞り込み:</span>
+        <button type="button" class="tag-filter-btn active" onclick="filterByTag('', this)">すべて</button>
+        <button type="button" class="tag-filter-btn" onclick="filterByTag('直営', this)">直営</button>
+        <button type="button" class="tag-filter-btn" onclick="filterByTag('二次', this)">二次</button>
+        <button type="button" class="tag-filter-btn" onclick="filterByTag('広域', this)">広域</button>
+        <button type="button" class="tag-filter-btn" onclick="filterByTag('地場', this)">地場</button>
+
+        <span style="border-left: 1px solid var(--border-color); height: 16px; margin: 0 4px;"></span>
+
+        <button type="button" class="tag-filter-btn" onclick="filterByTag('コネクシオ', this)">コネクシオ</button>
+        <button type="button" class="tag-filter-btn" onclick="filterByTag('KCS', this)">KCS</button>
+        <button type="button" class="tag-filter-btn" onclick="filterByTag('MXM', this)">MXM</button>
+        <button type="button" class="tag-filter-btn" onclick="filterByTag('TGAIA', this)">TGAIA</button>
+        <button type="button" class="tag-filter-btn" onclick="filterByTag('ITX', this)">ITX</button>
+        <button type="button" class="tag-filter-btn" onclick="filterByTag('ラネット', this)">ラネット</button>
+
+        <button type="button" id="btnClearSearch" onclick="clearSearch()" style="margin-left: auto; font-size: 0.78rem; background: #F1F5F9; color: #475569; border: 1px solid #CBD5E1; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: 700;">
+          <i class="fa-solid fa-xmark"></i> リセット
+        </button>
+      </div>
+      
+      <div class="table-responsive">
+        <table class="data-table" id="agencyTable">
+          <thead>
+            <tr>
+              <th>区分</th>
+              <th>代理店名</th>
+              <th>種別</th>
+              <th>開始日</th>
+              <th>誰に聞く？（商談対象者）</th>
+              <th>注意事項・ヒアリング指示</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>広域</td><td><b>コネクシオ</b></td><td>直営</td><td>10/1</td><td><span style="color:#B91C1C; font-weight:800;">店長 / 副店長</span></td><td>ヒアリング対象：店長/副店長　<b style="color:#B91C1C;">金額NG</b><b style="color:#C2410C;">専門用語NG。</b>サムスンの施策等でヒアリング実施　※提案資料の代理店握り施策、FFF8の還元施策の認識あるかのヒアリングお願いします。</td></tr>
+            <tr><td>広域</td><td><b>コネクシオ</b></td><td>二次</td><td>10/1</td><td><span style="color:#B91C1C; font-weight:800;">店長 / 副店長</span></td><td>ヒアリング対象：店長/副店長　<b style="color:#B91C1C;">金額NG</b><b style="color:#C2410C;">専門用語NG。</b>サムスンの施策等でヒアリング実施　※提案資料の代理店握り施策の認識あるかのヒアリングお願いします。</td></tr>
+            <tr><td>広域</td><td><b>KCS</b></td><td>直営</td><td>10/1</td><td><span style="color:#B91C1C; font-weight:800;">⭐ 店長</span></td><td>ヒアリング対象：店長<br>月末迄に各支店から店舗へ周知済み。下記確認お願いします。<br>　・店長の認知有無<br>　　→認知なければ支店からのメール周知確認を促してください。支店から周知がないのであればその旨報告ください。<br>　・温度感　※店長としてやる気があるのかないのかと、その理由<br>　・店長からスタッフへの周知状況（周知していないなら、その理由）<br>※提案資料の代理店握り施策、FFF8の還元施策の認識あるかのヒアリングお願いします。</td></tr>
+            <tr><td>広域</td><td><b>KCS</b></td><td>二次</td><td>10/1</td><td>常勤FSM誰でも</td><td>※ヒアリング可能代理店（すべて、<b style="color:#B91C1C;">金額絶対NG</b>）：<br>　・エヌエスシー（東北）<br>　・シーシーディー（関東）<br>　・関西二次店　全10法人<br>　（キンキテレコム、西菱電機、オオサカムセンデンキ、ダイヤアクセス、テレックス関西、ATS、エムイーエス、リンク、<br>　竹本電機サービスセンター、フジテレコムズ）<br>※提案資料の代理店握り施策の認識あるかのヒアリングお願いします。</td></tr>
+            <tr><td>広域</td><td><b>MXM</b></td><td>直営</td><td>10/1</td><td><span style="color:#B91C1C; font-weight:800;">店長 / 副店長</span></td><td>ヒアリング対象：店長/副店長<br><b style="color:#B91C1C;">金額NG</b>　<b style="color:#C2410C;">専門用語NG。</b>サムスンの施策等でヒアリング実施<br>※提案資料の代理店握り施策、FFF8の還元施策の認識あるかのヒアリングお願いします。</td></tr>
+            <tr><td>広域</td><td><b>MXM</b></td><td>二次</td><td>10/1</td><td><span style="color:#B91C1C; font-weight:800;">⭐ 店長のみ</span></td><td>ヒアリング対象：店長のみ　<b style="color:#C2410C;">専門用語NG。</b>サムスンの施策等でヒアリング実施<br>※提案資料の代理店握り施策の認識あるかのヒアリングお願いします。<br>ヒアリング可能代理店：別添資料参照</td></tr>
+            <tr><td>広域</td><td><b>TGAIA</b></td><td>直営</td><td>10/1</td><td>常勤FSM誰でも</td><td><b style="color:#B91C1C;">金額NG</b><b style="color:#C2410C;">専門用語NG。</b>サムスンの施策等でヒアリング実施　※提案資料の代理店握り施策、FFF8の還元施策の認識あるかのヒアリングお願いします。</td></tr>
+            <tr><td>広域</td><td><b>TGAIA</b></td><td>二次</td><td>10/2</td><td>常勤FSM誰でも</td><td><b style="color:#B91C1C;">金額NG</b><b style="color:#C2410C;">専門用語NG。</b>サムスンの施策等でヒアリング実施　※提案資料の代理店握り施策の認識あるかのヒアリングお願いします。</td></tr>
+            <tr><td>広域</td><td><b>ITX</b></td><td>直営</td><td>10/1</td><td><span style="color:#B91C1C; font-weight:800;">⭐ 店長</span></td><td>ヒアリング対象：店長<br>社内BBSで周知済み。下記確認お願いします。<br>　・店長の認知有無　→認知なければ上記BBSの確認を促してください（MD部から周知来ているはずです）。<br>　・温度感　※店長としてやる気があるのかないのかと、その理由<br>　・店長からスタッフへの周知状況（周知していないなら、その理由）<br>※提案資料の代理店握り施策の認識あるかのヒアリングお願いします。</td></tr>
+            <tr><td>広域</td><td><b>ITX</b></td><td>二次</td><td>10/1</td><td>常勤FSM誰でも</td><td>※提案資料の代理店握り施策の認識あるかのヒアリングお願いします。</td></tr>
+            <tr><td>広域</td><td><b>ラネット</b></td><td>直営</td><td>10/1</td><td><span style="color:#B91C1C; font-weight:800;">店長 / 副店長</span></td><td>ヒアリング対象：制限なし　店長/副店長を優先 ※提案資料のFFF8の還元施策の認識があるかのヒアリングをお願いします。</td></tr>
+            <tr><td>広域</td><td><b>ラネット</b></td><td>二次</td><td>10/1</td><td>常勤FSM誰でも</td><td><b style="color:#B91C1C;">金額NG</b></td></tr>
+            <tr><td>地場</td><td><b>国際貿易</b></td><td>-</td><td>10/1</td><td>常勤FSM誰でも</td><td>SRPなど<b style="color:#C2410C;">専門用語NG</b>、「サムスンの施策」等で表現。</td></tr>
+            <tr><td>地場</td><td><b>テレプラザ</b></td><td>-</td><td>10/1</td><td>常勤FSM誰でも</td><td>通常ルール適用（金額NG / 専門用語NG）</td></tr>
+            <tr><td>地場</td><td><b>トモテツセブン</b></td><td>-</td><td>10/1</td><td>常勤FSM誰でも</td><td>SRPなど<b style="color:#C2410C;">専門用語NG</b>、「サムスンの施策」等で表現。<br>台数に置き換えて追いかける体制をとっているため、『目標ポイント』というワードも使用しないようにしてください。目標台数のヒアリングは可です。</td></tr>
+            <tr><td>地場</td><td><b>三和興産</b></td><td>-</td><td>10/1</td><td>常勤FSM誰でも</td><td>SRPなど<b style="color:#C2410C;">専門用語NG</b>、「サムスンの施策」等で表現。</td></tr>
+            <tr><td>地場</td><td><b>モバイルコム</b></td><td>-</td><td>10/1</td><td>常勤FSM誰でも</td><td>SRPなど<b style="color:#C2410C;">専門用語NG</b>、「サムスンの施策」等で表現。<span style="color:#15803D; font-weight:700;">💡【例外】金額トークOK！</span></td></tr>
+            <tr><td>地場</td><td><b>南国殖産</b></td><td>-</td><td>10/1</td><td>常勤FSM誰でも</td><td>通常ルール適用（金額NG / 専門用語NG）</td></tr>
+            <tr><td>地場</td><td><b>DNS</b></td><td>直営</td><td>10/1</td><td>常勤FSM誰でも</td><td>通常ルール適用（金額NG / 専門用語NG）</td></tr>
+            <tr><td>地場</td><td><b>DNS</b></td><td>二次</td><td>10/1</td><td>常勤FSM誰でも</td><td>通常ルール適用（金額NG / 専門用語NG）</td></tr>
+            <tr><td>地場</td><td><b>ラッキーネットワークサービス</b></td><td>-</td><td>10/1</td><td>常勤FSM誰でも</td><td>通常ルール適用（金額NG / 専門用語NG）</td></tr>
+            <tr><td>地場</td><td><b>マイテレホン</b></td><td>-</td><td>10/1</td><td>常勤FSM誰でも</td><td>通常ルール適用（金額NG / 専門用語NG）</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div id="toast"><i class="fa-solid fa-circle-check" style="color: #4ADE80;"></i> コピーしました！</div>
+
+<script>
+function switchTab(tabId, btn) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  
+  document.getElementById(tabId).classList.add('active');
+  btn.classList.add('active');
+}
+
+
+// === Robust Navigation JS (Fix KPI Card Clicks) ===
+function switchTab(tabId, btnElement) {
+  // Hide all tab contents
+  const contents = document.querySelectorAll(".tab-content");
+  contents.forEach(content => {
+    content.classList.remove("active");
+  });
+
+  // Show target tab content
+  const targetContent = document.getElementById(tabId);
+  if (targetContent) {
+    targetContent.classList.add("active");
+  }
+
+  // Highlight Drawer items
+  const dItems = document.querySelectorAll(".drawer-item");
+  dItems.forEach(item => {
+    if (item.id === "ditem-" + tabId) {
+      item.classList.add("active");
+    } else {
+      item.classList.remove("active");
+    }
+  });
+
+  // Highlight Bottom Nav items
+  const bItems = document.querySelectorAll(".bottom-nav-item");
+  bItems.forEach(item => {
+    if (item.id === "bnav-" + tabId) {
+      item.classList.add("active");
+    } else {
+      item.classList.remove("active");
+    }
+  });
+}
+
+function navigateToTab(targetTabId) {
+  // Directly switch tab without relying on deleted top tab buttons
+  switchTab(targetTabId, null);
+  
+  // Smooth scroll to main container or specific card
+  const container = document.querySelector(".container");
+  if (container) {
+    container.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+
+function filterTable() {
+  const input = document.getElementById("searchInput");
+  const filter = input.value.toLowerCase();
+  const table = document.getElementById("agencyTable");
+  const tr = table.getElementsByTagName("tr");
+
+  for (let i = 1; i < tr.length; i++) {
+    let textContent = tr[i].textContent || tr[i].innerText;
+    tr[i].style.display = (textContent.toLowerCase().indexOf(filter) > -1) ? "" : "none";
+  }
+}
+
+function copyText(elementId, btnElement) {
+  const text = document.getElementById(elementId).innerText.replace(/[\u200B-\u200D\uFEFF]/g, '');
+  navigator.clipboard.writeText(text).then(() => {
+    const toast = document.getElementById("toast");
+    toast.className = "show";
+    const origHtml = btnElement.innerHTML;
+    btnElement.innerHTML = '<i class="fa-solid fa-check"></i> 完了';
+    btnElement.classList.add("copied");
+
+    setTimeout(() => {
+      toast.className = toast.className.replace("show", "");
+      btnElement.innerHTML = origHtml;
+      btnElement.classList.remove("copied");
+    }, 1800);
+  });
+}
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute("data-theme");
+  const next = current === "dark" ? "light" : "dark";
+  html.setAttribute("data-theme", next);
+  document.getElementById("themeText").innerText = next === "dark" ? "ライト" : "ダーク";
+}
+
+// === Feature 1: Quick Tag Filter & Reset ===
+function filterByTag(tagValue, btnElem) {
+  const input = document.getElementById("searchInput");
+  input.value = tagValue;
+  filterTable();
+
+  // Highlight active tag button
+  const btns = document.querySelectorAll(".tag-filter-btn");
+  btns.forEach(b => b.classList.remove("active"));
+  if (btnElem) {
+    btnElem.classList.add("active");
+  }
+}
+
+function clearSearch() {
+  const input = document.getElementById("searchInput");
+  input.value = "";
+  filterTable();
+
+  const btns = document.querySelectorAll(".tag-filter-btn");
+  btns.forEach(b => b.classList.remove("active"));
+  if (btns.length > 0) btns[0].classList.add("active");
+}
+
+// === Feature 2: Smart Interactive Copy Modal ===
+let currentModalElemId = "";
+
+function openSmartCopyModal(elemId) {
+  currentModalElemId = elemId;
+  const rawText = document.getElementById(elemId).innerText;
+  const modal = document.getElementById("smartCopyModal");
+  const fieldsContainer = document.getElementById("modalFormFields");
+  fieldsContainer.innerHTML = "";
+
+  // Extract placeholders matching [pattern]
+  const regex = /\[([^\]]+)\]/g;
+  let match;
+  const placeholders = [];
+  while ((match = regex.exec(rawText)) !== null) {
+    if (!placeholders.includes(match[1])) {
+      placeholders.push(match[1]);
+    }
+  }
+
+  if (placeholders.length === 0) {
+    fieldsContainer.innerHTML = '<p style="font-size:0.85rem; color:#64748B;">このテンプレートに置き換え用の標準項目はありません。プレビューを確認してコピーしてください。</p>';
+  } else {
+    placeholders.forEach((ph, idx) => {
+      const fieldDiv = document.createElement("div");
+      fieldDiv.style.marginBottom = "12px";
+      fieldDiv.innerHTML = `
+        <label style="display:block; font-size:0.8rem; font-weight:800; color:#334155; margin-bottom:4px;">
+          項目 (${idx+1}): <span style="color:#2563EB;">[${ph}]</span>
+        </label>
+        <input type="text" class="smart-input-field" data-ph="${ph}" placeholder="入力または例を選択..." oninput="updateModalPreview()" style="width:100%; padding:8px 12px; border:1px solid #CBD5E1; border-radius:6px; font-size:0.85rem;">
+      `;
+      fieldsContainer.appendChild(fieldDiv);
+    });
+  }
+
+  modal.style.display = "flex";
+  updateModalPreview();
+}
+
+function closeSmartCopyModal() {
+  document.getElementById("smartCopyModal").style.display = "none";
+}
+
+function updateModalPreview() {
+  if (!currentModalElemId) return;
+  let text = document.getElementById(currentModalElemId).innerText;
+  const inputs = document.querySelectorAll(".smart-input-field");
+
+  inputs.forEach(input => {
+    const ph = input.getAttribute("data-ph");
+    const val = input.value.trim();
+    if (val) {
+      text = text.replace(new RegExp("\\[" + escapeRegExp(ph) + "\\]", "g"), val);
+    }
+  });
+
+  document.getElementById("modalPreviewText").innerText = text;
+}
+
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function copySmartModalText(btnElem) {
+  const text = document.getElementById("modalPreviewText").innerText.replace(/[\u200B-\u200D\uFEFF]/g, '');
+  navigator.clipboard.writeText(text).then(() => {
+    const origHtml = btnElem.innerHTML;
+    btnElem.innerHTML = '<i class="fa-solid fa-check"></i> コピー完了！';
+    btnElem.style.background = "#16A34A";
+
+    setTimeout(() => {
+      btnElem.innerHTML = origHtml;
+      btnElem.style.background = "#2563EB";
+      closeSmartCopyModal();
+    }, 1200);
+  });
+}
+
+// Sync Bottom Nav active state with main tab switches
+const origSwitchTab = window.switchTab;
+window.switchTab = function(tabId, btnElement) {
+  if (origSwitchTab) origSwitchTab(tabId, btnElement);
+
+  // Sync Bottom Nav buttons
+  const bnavItems = document.querySelectorAll(".bottom-nav-item");
+  bnavItems.forEach(item => {
+    if (item.id === "bnav-" + tabId) {
+      item.classList.add("active");
+    } else {
+      item.classList.remove("active");
+    }
+  });
+};
+
+
+// === Left Drawer Navigation JS ===
+function toggleDrawer() {
+  const drawer = document.getElementById("drawerMenu");
+  const overlay = document.getElementById("drawerOverlay");
+  if (drawer && overlay) {
+    drawer.classList.toggle("open");
+    overlay.classList.toggle("open");
+  }
+}
+
+function selectDrawerTab(tabId, elem) {
+  // Call main switchTab
+  if (window.switchTab) {
+    const mainBtn = document.getElementById("tab-btn-" + tabId);
+    window.switchTab(tabId, mainBtn || elem);
+  }
+
+  // Highlight drawer items
+  const dItems = document.querySelectorAll(".drawer-item");
+  dItems.forEach(item => {
+    if (item.id === "ditem-" + tabId) {
+      item.classList.add("active");
+    } else {
+      item.classList.remove("active");
+    }
+  });
+
+  // Close drawer
+  toggleDrawer();
+}
+
+</script>
+
+
+<!-- 📱 モバイル固定 ボトムナビゲーション -->
+<div class="mobile-bottom-nav">
+  <button class="bottom-nav-item active" id="bnav-dashboard" onclick="switchTab('dashboard', this)">
+    <i class="fa-solid fa-chart-pie"></i>
+    <span>TOP</span>
+  </button>
+  <button class="bottom-nav-item" id="bnav-agency-table" onclick="switchTab('agency-table', this)">
+    <i class="fa-solid fa-building"></i>
+    <span>早見表</span>
+  </button>
+  <button class="bottom-nav-item" id="bnav-srp-guide" onclick="switchTab('srp-guide', this)">
+    <i class="fa-solid fa-clipboard-check"></i>
+    <span>ガイド</span>
+  </button>
+  <button class="bottom-nav-item" id="bnav-detail-format" onclick="switchTab('detail-format', this)">
+    <i class="fa-solid fa-file-pen"></i>
+    <span>フォーマット</span>
+  </button>
+</div>
+
+
+<!-- ⚡ スマートコピペ生成 モーダル -->
+<div id="smartCopyModal" class="modal-backdrop" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.6); z-index:9999; backdrop-filter:blur(4px); align-items:center; justify-content:center;">
+  <div style="background:#FFFFFF; width:92%; max-width:540px; border-radius:16px; padding:24px; box-shadow:0 20px 25px -5px rgba(0,0,0,0.2); position:relative; max-height:90vh; overflow-y:auto;">
+    <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #E2E8F0; padding-bottom:12px; margin-bottom:16px;">
+      <h3 style="font-size:1.05rem; font-weight:900; color:#0F172A; margin:0; display:flex; align-items:center; gap:8px;">
+        <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i> スマート報告文カスタマイズ
+      </h3>
+      <button type="button" onclick="closeSmartCopyModal()" style="background:none; border:none; font-size:1.3rem; color:#64748B; cursor:pointer; padding:4px;">✕</button>
+    </div>
+
+    <div id="modalFormFields">
+      <!-- Dynamic Input Fields will be populated here -->
+    </div>
+
+    <div style="margin-top:16px; background:#F8FAFC; border:1px solid #E2E8F0; padding:12px; border-radius:8px;">
+      <label style="font-size:0.78rem; font-weight:800; color:#475569; display:block; margin-bottom:6px;">📄 完成文プレビュー:</label>
+      <div id="modalPreviewText" style="font-size:0.86rem; color:#0F172A; font-family:monospace; white-space:pre-wrap; background:#FFFFFF; padding:10px; border:1px solid #CBD5E1; border-radius:6px; min-height:60px;"></div>
+    </div>
+
+    <div style="display:flex; gap:10px; margin-top:20px; justify-content:flex-end;">
+      <button type="button" onclick="closeSmartCopyModal()" style="background:#E2E8F0; color:#475569; border:none; padding:8px 16px; border-radius:8px; font-weight:700; cursor:pointer;">キャンセル</button>
+      <button type="button" onclick="copySmartModalText(this)" style="background:#2563EB; color:#FFFFFF; border:none; padding:8px 20px; border-radius:8px; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:6px;">
+        <i class="fa-regular fa-copy"></i> 完成文をコピー
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ☰ 左側スライドイン ドロワーメニュー (スマホ対応) -->
+<div id="drawerOverlay" class="drawer-overlay" onclick="toggleDrawer()"></div>
+<div id="drawerMenu" class="drawer-menu">
+  <div class="drawer-header">
+    <div style="display:flex; align-items:center; gap:10px;">
+      
+      <span style="font-weight:900; font-size:1.05rem; color:#0F172A;">ページ切替メニュー</span>
+    </div>
+    <button type="button" onclick="toggleDrawer()" class="drawer-close-btn"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+
+  <div class="drawer-body">
+    <button class="drawer-item active" id="ditem-dashboard" onclick="selectDrawerTab('dashboard', this)">
+      <i class="fa-solid fa-chart-pie text-blue-500"></i>
+      <span>📊 ダッシュボード</span>
+    </button>
+    <button class="drawer-item" id="ditem-detail-format" onclick="selectDrawerTab('detail-format', this)">
+      <i class="fa-solid fa-file-pen text-emerald-500"></i>
+      <span>📝 現場報告フォーマット</span>
+    </button>
+    <button class="drawer-item" id="ditem-srp-guide" onclick="selectDrawerTab('srp-guide', this)">
+      <i class="fa-solid fa-clipboard-check text-purple-500"></i>
+      <span>📱 DCM SRP 現場ガイド</span>
+    </button>
+    <button class="drawer-item" id="ditem-agency-table" onclick="selectDrawerTab('agency-table', this)">
+      <i class="fa-solid fa-building text-sky-500"></i>
+      <span>🏢 代理店別 早見表</span>
+    </button>
+  </div>
+
+  <div class="drawer-footer">
+    <a href="https://docs.google.com/spreadsheets/d/1cxzXOD8T0cXfWhc1gJx56nBFJjFsjljCyDxW9x6G13g/edit?usp=sharing" target="_blank" class="drawer-footer-link">
+      <i class="fa-solid fa-file-excel text-emerald-600"></i> MD担当巡回スプレッドシート
+    </a>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>仕事用ツール一覧</title>
+<style>
+  :root { --bg: #F8FAFC; --card: #FFFFFF; --text: #0F172A; --muted: #64748B; --border: #E2E8F0; --accent: #2563EB; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0F172A; --card: #1E293B; --text: #F8FAFC; --muted: #94A3B8; --border: #334155; --accent: #60A5FA; }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; padding: 32px 16px; }
+  main { max-width: 640px; margin: 0 auto; }
+  h1 { font-size: 1.4rem; margin-bottom: 20px; }
+  a.card { display: block; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; margin-bottom: 12px; color: inherit; text-decoration: none; }
+  a.card:hover { border-color: var(--accent); }
+  .name { font-weight: 700; color: var(--accent); }
+  .desc { font-size: 0.88rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <h1>仕事用ツール一覧</h1>
+  <a class="card" href="srp/"><div class="name">DCM SRP施策ポータル</div><div class="desc">SRP施策ガイド・現場報告フォーマット・巡回マスタ入力ルール</div></a>
+  <a class="card" href="master-miss/"><div class="name">店舗マスタミスポータル</div><div class="desc">マスタチェックExcelの読み込み・マスタミス自動カウント</div></a>
+  <a class="card" href="annotator/"><div class="name">画像注釈・手順書スタジオ</div><div class="desc">写真のモザイク加工・手順書の1枚画像作成</div></a>
+</main>
+</body>
+</html>
