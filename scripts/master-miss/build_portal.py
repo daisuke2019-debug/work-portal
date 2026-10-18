@@ -146,7 +146,7 @@ html_content = """<!DOCTYPE html>
 
     <!-- サイドバー (ハンバーガーメニュー) -->
     <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden transition-opacity duration-300"></div>
-    <aside id="sidebar" class="fixed top-0 left-0 w-80 h-full bg-white z-50 transform -translate-x-full shadow-2xl flex flex-col justify-between p-6 border-r-2 border-slate-300 transition-transform duration-300 ease-out">
+    <aside id="sidebar" class="fixed top-0 left-0 w-80 h-full overflow-y-auto overscroll-contain bg-white z-50 transform -translate-x-full shadow-2xl flex flex-col justify-between p-6 border-r-2 border-slate-300 transition-transform duration-300 ease-out">
         <div>
             <div class="flex items-center justify-between pb-5 border-b-2 border-slate-200">
                 <div class="flex items-center gap-2.5">
