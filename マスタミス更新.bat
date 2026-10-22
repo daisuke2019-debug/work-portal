@@ -8,8 +8,13 @@ echo [2/3] ポータルのページを作っています...
 python scripts\master-miss\build_portal.py || goto :error
 echo [3/3] 公開しています...
 git add site/master-miss/index.html
-git diff --cached --quiet && (echo 変更はありませんでした。 & goto :done)
-git commit -m "Update master-miss data" || goto :error
+git diff --cached --quiet
+if errorlevel 1 (
+  git commit -m "Update master-miss data" || goto :error
+) else (
+  echo 新しい変更はありませんでした。送れていない更新が残っていないか確認します...
+)
+rem 前回の送信に失敗していても、ここで必ず送り直す
 git push || goto :error
 echo 完了しました。1分ほどで https://daisuke2019-debug.github.io/work-portal/master-miss/ に反映されます。
 goto :done
