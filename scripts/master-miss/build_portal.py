@@ -169,7 +169,7 @@ html_content = """<!DOCTYPE html>
                 <button onclick="setDateFilter('all'); toggleSidebar();" class="w-full text-left p-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-900 font-black text-sm flex items-center justify-between transition-all group">
                     <div class="flex items-center gap-2.5">
                         <span class="text-lg">🌐</span>
-                        <span>全期間 累計データ</span>
+                        <span>月間 累計データ</span>
                     </div>
                 </button>
 
@@ -202,7 +202,7 @@ html_content = """<!DOCTYPE html>
                     <div>
                         <div class="flex items-center gap-2">
                             <h1 class="text-base sm:text-xl font-black tracking-tight text-white">店舗マスタチェック指摘カウント</h1>
-                            <span class="bg-red-600 text-white text-xs font-black px-2 py-0.5 rounded border border-red-400 shrink-0">10月度</span>
+                            <span class="bg-red-600 text-white text-xs font-black px-2 py-0.5 rounded border border-red-400 shrink-0" id="monthBadge"></span>
                         </div>
                         <p class="text-xs text-slate-300 hidden sm:block font-bold">全スタッフの店舗巡回・マスタミス指摘結果の一覧・日別比較分析</p>
                     </div>
@@ -228,6 +228,14 @@ html_content = """<!DOCTYPE html>
         </div>
 
 
+        <!-- 🗓️ 月の切替タブ（過去の月の記録はそのまま残り、タップで切り替え） -->
+        <div class="glass-card p-3 sm:p-4 rounded-2xl border-2 border-slate-300 bg-white shadow-sm flex flex-wrap items-center gap-2">
+            <span class="text-sm sm:text-base font-black text-slate-900 mr-1">🗓️ 対象月</span>
+            <div id="monthTabs" class="flex flex-wrap items-center gap-2">
+                <!-- JavaScriptで動的生成される月タブ -->
+            </div>
+        </div>
+
         <!-- 📅 日付別切り替えタブバー (最重要・各日付独立保持＆ワンタップ切替) -->
         <div class="glass-card p-4 sm:p-5 rounded-2xl border-2 border-slate-300 bg-white shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div class="flex items-center gap-3">
@@ -237,7 +245,7 @@ html_content = """<!DOCTYPE html>
                 <div>
                     <h3 class="text-base sm:text-lg font-black text-slate-900 flex items-center gap-2">
                         <span>対象日付の切替</span>
-                        <span id="currentDateDisplayBadge" class="bg-slate-900 text-white text-xs px-2.5 py-0.5 rounded-full font-black">全期間 (累計)</span>
+                        <span id="currentDateDisplayBadge" class="bg-slate-900 text-white text-xs px-2.5 py-0.5 rounded-full font-black">月間累計</span>
                     </h3>
                     <p class="text-xs sm:text-sm text-slate-700 font-bold mt-0.5">タップすると全KPI・指摘ランキング・テーブル・詳細がその日付のデータに即座に切り替わります</p>
                 </div>
@@ -433,9 +441,66 @@ html_content = """<!DOCTYPE html>
     </div>
 
     <script>
-        let currentStaffData = """ + js_staff_data + """;
+        // allStaffData = 全部の月の記録 / currentStaffData = 選んでいる月だけに絞ったもの（画面の集計はこちらを使う）
+        let allStaffData = """ + js_staff_data + """;
+        let currentStaffData = {};
         let currentColRanking = """ + js_col_ranking + """;
+        let activeMonth = null;
         let activeDateFilter = 'all';
+
+        // 店舗データの月 'YYYY-MM'（month が無い古いデータは日付 'MM/DD' から推定）
+        function monthOf(sh) {
+            if (sh.month) return sh.month;
+            const mm = parseInt(String(sh.date || '').split('/')[0], 10);
+            const now = new Date();
+            let y = now.getFullYear();
+            if (!mm) return y + '-' + String(now.getMonth() + 1).padStart(2, '0');
+            if (mm > now.getMonth() + 1) y -= 1;
+            return y + '-' + String(mm).padStart(2, '0');
+        }
+
+        function monthLabel(m) {
+            return m ? parseInt(m.split('-')[1], 10) + '月度' : '';
+        }
+
+        function listMonths() {
+            const set = new Set();
+            for (let s in allStaffData) {
+                for (let sh of allStaffData[s].shops) set.add(monthOf(sh));
+            }
+            return Array.from(set).sort();
+        }
+
+        function applyMonth() {
+            const months = listMonths();
+            if (!activeMonth || !months.includes(activeMonth)) {
+                activeMonth = months.length ? months[months.length - 1] : null;
+            }
+            currentStaffData = {};
+            for (let s in allStaffData) {
+                const shops = allStaffData[s].shops.filter(sh => monthOf(sh) === activeMonth);
+                if (shops.length) currentStaffData[s] = Object.assign({}, allStaffData[s], { shops: shops });
+            }
+        }
+
+        function setMonth(m) {
+            activeMonth = m;
+            activeDateFilter = 'all';
+            applyMonth();
+            renderPortal();
+        }
+
+        function renderMonthTabs() {
+            const box = document.getElementById('monthTabs');
+            if (box) {
+                box.innerHTML = listMonths().map(m => {
+                    const on = m === activeMonth;
+                    return `<button onclick="setMonth('${m}')" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-black transition-all shadow-sm ${on ? 'bg-red-600 text-white border-2 border-red-600 ring-2 ring-red-600' : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-2 border-slate-300'}">${m.split('-')[0]}年 ${monthLabel(m)}</button>`;
+                }).join('');
+            }
+            const badge = document.getElementById('monthBadge');
+            if (badge) badge.textContent = monthLabel(activeMonth);
+        }
         let activeQuickFilter = 'all';
         let activeModalStaffName = null;
 
@@ -462,16 +527,19 @@ html_content = """<!DOCTYPE html>
         }
 
         function extractDateFromFilename(fileName) {
-            if (!fileName) return '10/02';
+            // 月は2桁（例 11/02）にそろえる。集計スクリプトが作るデータと同じ形にするため
+            const now = new Date();
+            const today = String(now.getMonth() + 1).padStart(2, '0') + '/' + String(now.getDate()).padStart(2, '0');
+            if (!fileName) return today;
             const m = fileName.match(/_result(\\d{2})(\\d{2})/i);
             if (m) {
-                return parseInt(m[1]) + '/' + m[2];
+                return m[1] + '/' + m[2];
             }
             const mYmd = fileName.match(/202\\d(\\d{2})(\\d{2})/);
             if (mYmd) {
-                return parseInt(mYmd[1]) + '/' + mYmd[2];
+                return mYmd[1] + '/' + mYmd[2];
             }
-            return '10/02';
+            return today;
         }
 
         function handleFileSelect(event) {
@@ -556,10 +624,12 @@ html_content = """<!DOCTYPE html>
                         throw new Error('有効な店舗データが見つかりませんでした');
                     }
 
+                    // 全部の月の記録に統合する（同じ月・同じ日付の分だけ置き換え、ほかの月はそのまま残す）
+                    const detectedMonth = monthOf({ date: detectedDate });
                     const updatedStaffData = {};
 
-                    for (let s in currentStaffData) {
-                        const existingShops = currentStaffData[s].shops.filter(sh => sh.date !== detectedDate);
+                    for (let s in allStaffData) {
+                        const existingShops = allStaffData[s].shops.filter(sh => !(sh.date === detectedDate && monthOf(sh) === detectedMonth));
                         updatedStaffData[s] = {
                             a_count: 0,
                             non_a_red_total: 0,
@@ -576,16 +646,19 @@ html_content = """<!DOCTYPE html>
                             name: item.name,
                             sv: item.sv,
                             date: item.date,
+                            month: detectedMonth,
                             is_a_red: item.is_a_red,
                             non_a_count: item.non_a_count,
                             non_a_items: item.non_a_items
                         });
                     }
 
-                    currentStaffData = updatedStaffData;
+                    allStaffData = updatedStaffData;
                     try {
-                        localStorage.setItem('master_miss_portal_staff_data', JSON.stringify(currentStaffData));
+                        localStorage.setItem('master_miss_portal_staff_data', JSON.stringify(allStaffData));
                     } catch(e) { console.error('LocalStorage save error:', e); }
+                    activeMonth = detectedMonth;
+                    applyMonth();
                     activeDateFilter = detectedDate;
 
                     if (statusEl) statusEl.textContent = `✅ ${file.name} (${detectedDate}分) スマート統合完了`;
@@ -709,6 +782,7 @@ html_content = """<!DOCTYPE html>
 
 
         function renderPortal() {
+            renderMonthTabs();
             const dataInfo = getFilteredData();
             const staffMap = dataInfo.staffMap;
             const dates = dataInfo.dates;
@@ -725,7 +799,7 @@ html_content = """<!DOCTYPE html>
                 btnsHtml += `
                     <button onclick="setDateFilter('all')" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-black transition-all shadow-sm flex items-center gap-1.5 ${isAllActive ? 'bg-slate-900 text-white border-2 border-slate-900 shadow-md ring-2 ring-slate-900' : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-2 border-slate-300'}">
                         <span>🌐</span>
-                        <span>全期間 (累計)</span>
+                        <span>${monthLabel(activeMonth)} 月間累計</span>
                     </button>
                 `;
 
@@ -761,7 +835,7 @@ html_content = """<!DOCTYPE html>
                 btnsHtml += `
                     <div class="relative inline-block">
                         <select id="mainDateSelectDropdown" onchange="setDateFilter(this.value)" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-black text-slate-900 border-2 border-slate-400 focus:outline-none focus:ring-2 focus:ring-red-600 shadow-sm cursor-pointer ${activeDateFilter !== 'all' ? 'bg-red-50 border-red-500 text-red-950 font-black' : 'bg-white'}">
-                            <option value="all" ${activeDateFilter === 'all' ? 'selected' : ''}>🌐 全期間 (累計) 表示</option>
+                            <option value="all" ${activeDateFilter === 'all' ? 'selected' : ''}>🌐 ${monthLabel(activeMonth)} 月間累計 表示</option>
                             ${dates.map(d => {
                                 const cnt = Object.values(currentStaffData).reduce((acc, st) => acc + st.shops.filter(s => s.date === d).length, 0);
                                 return `<option value="${d}" ${activeDateFilter === d ? 'selected' : ''}>📅 ${d}分データ (${cnt}店舗)</option>`;
@@ -801,7 +875,7 @@ html_content = """<!DOCTYPE html>
             // 3. バッジ
             const badgeEl = document.getElementById('currentDateDisplayBadge');
             if (badgeEl) {
-                badgeEl.textContent = activeDateFilter === 'all' ? '全期間 (累計表示)' : `${activeDateFilter}分データ表示中`;
+                badgeEl.textContent = activeDateFilter === 'all' ? `${monthLabel(activeMonth)} 月間累計` : `${activeDateFilter}分データ表示中`;
                 badgeEl.className = activeDateFilter === 'all' ? 'bg-slate-900 text-white text-xs px-2.5 py-0.5 rounded-full font-black' : 'bg-red-600 text-white text-xs px-2.5 py-0.5 rounded-full font-black';
             }
 
@@ -1001,7 +1075,7 @@ html_content = """<!DOCTYPE html>
             if (!info) return;
 
             document.getElementById('modalStaffName').textContent = staffName;
-            document.getElementById('modalStaffSubText').textContent = activeDateFilter === 'all' ? `${staffName} さんの全期間指摘一覧` : `${staffName} さんの${activeDateFilter}分 指摘一覧`;
+            document.getElementById('modalStaffSubText').textContent = activeDateFilter === 'all' ? `${staffName} さんの${monthLabel(activeMonth)} 月間累計 指摘一覧` : `${staffName} さんの${activeDateFilter}分 指摘一覧`;
 
             document.getElementById('modalShopCount').innerHTML = `${info.shops.length} <span class="text-xs text-slate-700">店舗</span>`;
             document.getElementById('modalARedCount').innerHTML = `${info.a_count} <span class="text-xs text-red-900">店舗</span>`;
@@ -1055,7 +1129,7 @@ ${staffName} さん
 お疲れ様です。マスタチェックにて巡回店舗の指摘箇所が検出されました。早急に確認と修正をお願いいたします。
 
 ■ 巡回スタッフ: ${staffName}
-■ 対象期間: ${activeDateFilter === 'all' ? '全期間 (累計)' : activeDateFilter + '分'}
+■ 対象期間: ${activeDateFilter === 'all' ? monthLabel(activeMonth) + ' 月間累計' : activeDateFilter + '分'}
 ■ 巡回店舗数: ${info.shops.length} 店舗
 ■ A列赤指摘 (マスタミス): ${info.a_count} 回
 ■ A列外赤セル内訳: ${info.non_a_red_total} 箇所
@@ -1091,7 +1165,7 @@ ${staffName} さん
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `店舗マスタミス集計_${activeDateFilter === 'all' ? '全期間' : activeDateFilter}.csv`;
+            link.download = `店舗マスタミス集計_${activeDateFilter === 'all' ? monthLabel(activeMonth) + '月間累計' : activeDateFilter.replace('/', '-')}.csv`;
             link.click();
         }
 
@@ -1126,6 +1200,7 @@ ${staffName} さん
                     }
                 });
             }
+            applyMonth();
             renderPortal();
         });
 

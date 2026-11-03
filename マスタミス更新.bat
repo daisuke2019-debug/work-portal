@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 >nul
-rem 店舗マスタミスポータルの毎日の更新（10月マスタミス フォルダのExcelを集計して公開する）
+rem 店舗マスタミスポータルの毎日の更新（デスクトップの「◯月マスタミス」フォルダ（10月・11月…）のExcelを集計して公開する）
 cd /d "%~dp0"
 echo [1/3] Excelを集計しています...
 python scripts\master-miss\update_all.py || goto :error

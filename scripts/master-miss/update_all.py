@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
-"""10月マスタミスフォルダ内の *_resultMMDD.xlsx を全自動検出して portal_json_data.json を再生成"""
-import openpyxl, json, os, re, sys, ctypes, ctypes.wintypes
+"""デスクトップの「◯月マスタミス」フォルダ（10月マスタミス、11月マスタミス…）にある
+*_resultMMDD.xlsx を全自動検出して portal_json_data.json を再生成する。
+各店舗データには month（例 2026-11）を付け、ポータルで月ごとに切り替えられるようにする。"""
+import openpyxl, json, os, re, sys, datetime, ctypes, ctypes.wintypes
 sys.stdout.reconfigure(encoding='utf-8')
 
-SRC_DIR = r'C:\Users\marum\OneDrive\デスクトップ\10月マスタミス'
+DESKTOP = r'C:\Users\marum\OneDrive\デスクトップ'
+# 「10月マスタミス」「11月マスタミス」のような名前のフォルダを全部読む（12月以降もフォルダを作るだけでよい）
+SRC_DIR_PATTERN = re.compile(r'^\d{1,2}月マスタミス$')
 # 一時ファイルと集計JSONは data/ に置く（Gitには入らない）
 WORK_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'data')
 
@@ -49,17 +53,35 @@ def parse_file(path, date_str):
     os.remove(tmp)
     return shops
 
-files = {}
-for fn in os.listdir(SRC_DIR):
-    m = re.search(r'_result(\d{2})(\d{2})\.xlsx$', fn, re.I)
+def month_key(fn, mm):
+    """ファイル名の作成日時(shop_masters_YYYYMM...)から年を決め、データの月(mm)と合わせて 'YYYY-MM' を返す"""
+    m = re.search(r'shop_masters_(\d{4})(\d{2})', fn)
     if m:
-        files[f'{m.group(1)}/{m.group(2)}'] = os.path.join(SRC_DIR, fn)
+        year, file_mm = int(m.group(1)), int(m.group(2))
+        if int(mm) > file_mm:  # 例: 1月に作られた12月分のファイル → 前の年
+            year -= 1
+    else:
+        year = datetime.date.today().year
+    return f'{year}-{mm}'
+
+files = {}  # 'YYYY-MM-DD' -> (ファイルの場所, 'MM/DD', 'YYYY-MM')
+for folder in sorted(os.listdir(DESKTOP)):
+    src = os.path.join(DESKTOP, folder)
+    if not (SRC_DIR_PATTERN.match(folder) and os.path.isdir(src)):
+        continue
+    for fn in os.listdir(src):
+        m = re.search(r'_result(\d{2})(\d{2})\.xlsx$', fn, re.I)
+        if m:
+            mk = month_key(fn, m.group(1))
+            files[f'{mk}-{m.group(2)}'] = (os.path.join(src, fn), f'{m.group(1)}/{m.group(2)}', mk)
 
 staff_data, col_ranking = {}, {}
-for d in sorted(files):
-    shops = parse_file(files[d], d)
-    print(f'{d}: {len(shops)}店舗 ({os.path.basename(files[d])})')
+for key in sorted(files):
+    path, d, mk = files[key]
+    shops = parse_file(path, d)
+    print(f'{d}: {len(shops)}店舗 ({os.path.basename(os.path.dirname(path))}/{os.path.basename(path)})')
     for it in shops:
+        it['month'] = mk
         s = staff_data.setdefault(it['staff'], {'a_count': 0, 'non_a_red_total': 0, 'shops': []})
         s['a_count'] += it['is_a_red']
         s['non_a_red_total'] += it['non_a_count']
@@ -73,5 +95,6 @@ for info in staff_data.values():
 
 with open(os.path.join(WORK_DIR, 'portal_json_data.json'), 'w', encoding='utf-8') as f:
     json.dump({'staff_data': staff_data, 'col_ranking': col_ranking,
-               'available_dates': sorted(files)}, f, ensure_ascii=False, indent=2, default=str)
+               'available_dates': [files[k][1] for k in sorted(files)],
+               'months': sorted({v[2] for v in files.values()})}, f, ensure_ascii=False, indent=2, default=str)
 print('合計:', sum(len(v['shops']) for v in staff_data.values()), '店舗')
