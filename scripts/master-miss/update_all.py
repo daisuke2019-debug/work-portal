@@ -30,20 +30,29 @@ def parse_file(path, date_str):
     wb = openpyxl.load_workbook(tmp, data_only=True)
     sh = wb['店舗マスタ'] if '店舗マスタ' in wb.sheetnames else wb[wb.sheetnames[0]]
     headers = [str(sh.cell(row=1, column=c).value or f'Col{c}').strip() for c in range(1, sh.max_column + 1)]
+    # 11/5: 列は見出しの名前で探す（11月から先頭に「店舗コード」列が増え、位置がずれたため）。
+    # 見出しが無い古い形式は、これまでどおりの位置（1列目=店舗・4列目=最終更新スタッフ・5列目）を使う。
+    def col_of(name, default):
+        return headers.index(name) + 1 if name in headers else default
+    c_shop = col_of('店舗', 1)
+    c_staff = col_of('最終更新スタッフ', 4)
+    c_sv = col_of('シフト稼働日', 5)
+    c_code = col_of('店舗コード', None)
+    shop_cols = {c_shop} | ({c_code} if c_code else set())  # 店舗名・店舗コードの赤＝「A列赤（マスタミス）」扱い
     shops = []
     for r in range(2, sh.max_row + 1):
-        v = sh.cell(row=r, column=1).value
+        v = sh.cell(row=r, column=c_shop).value
         if not v or str(v).strip() == '店舗':
             continue
-        staff = str(sh.cell(row=r, column=4).value or '未設定').strip()
-        sv = str(sh.cell(row=r, column=5).value or '').strip()
+        staff = str(sh.cell(row=r, column=c_staff).value or '未設定').strip()
+        sv = str(sh.cell(row=r, column=c_sv).value or '').strip()
         is_a_red, non_a = False, []
         for c in range(1, sh.max_column + 1):
             f = sh.cell(row=r, column=c).fill
             if f and f.fill_type and f.fill_type != 'none':
                 fg = str(getattr(f.fgColor, 'rgb', '') or getattr(f.start_color, 'rgb', '') or '').upper()
                 if 'FF0000' in fg or fg == 'RED':
-                    if c == 1:
+                    if c in shop_cols:
                         is_a_red = True
                     else:
                         non_a.append(headers[c - 1])

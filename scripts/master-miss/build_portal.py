@@ -568,11 +568,15 @@ html_content = """<!DOCTYPE html>
                     }
 
                     const parsedShops = [];
+                    // 11/5: 列は見出しの名前で探す（先頭に「店舗コード」列が増えても大丈夫なように）
+                    const colOf = (name, def) => { const i = headers.indexOf(name); return i >= 0 ? i : def; };
+                    const cShop = colOf('店舗', 0), cStaff = colOf('最終更新スタッフ', 3), cSv = colOf('シフト稼働日', 4);
+                    const cCode = colOf('店舗コード', -1);
 
                     for (let R = 1; R <= range.e.r; ++R) {
-                        const shopCell = sheet[XLSX.utils.encode_cell({ r: R, c: 0 })];
-                        const staffCell = sheet[XLSX.utils.encode_cell({ r: R, c: 3 })];
-                        const svCell = sheet[XLSX.utils.encode_cell({ r: R, c: 4 })];
+                        const shopCell = sheet[XLSX.utils.encode_cell({ r: R, c: cShop })];
+                        const staffCell = sheet[XLSX.utils.encode_cell({ r: R, c: cStaff })];
+                        const svCell = sheet[XLSX.utils.encode_cell({ r: R, c: cSv })];
 
                         if (!shopCell || !shopCell.v) continue;
                         const shopName = String(shopCell.v).trim();
@@ -601,7 +605,7 @@ html_content = """<!DOCTYPE html>
 
                             if (isRed) {
                                 const colName = headers[C] || `Col${C+1}`;
-                                if (C === 0) {
+                                if (C === cShop || C === cCode) {
                                     isARed = true;
                                 } else {
                                     nonARedItems.push(colName);
