@@ -84,25 +84,50 @@ for folder in sorted(os.listdir(DESKTOP)):
             mk = month_key(fn, m.group(1))
             files[f'{mk}-{m.group(2)}'] = (os.path.join(src, fn), f'{m.group(1)}/{m.group(2)}', mk)
 
-staff_data, col_ranking = {}, {}
+# 11/5: 毎回読み直すのは「いちばん新しい月」だけ。終わった月（例：10月）は前回の集計結果をそのまま使う。
+# 前回の結果にその月が無いとき（初回・別のPCなど）だけ、その月のファイルも読む。
+json_path = os.path.join(WORK_DIR, 'portal_json_data.json')
+latest_month = max(v[2] for v in files.values()) if files else None
+prev_shops = {}  # 'YYYY-MM' -> [店舗データ]
+if os.path.exists(json_path):
+    try:
+        with open(json_path, encoding='utf-8') as f:
+            for info in json.load(f).get('staff_data', {}).values():
+                for it in info.get('shops', []):
+                    prev_shops.setdefault(it.get('month'), []).append(it)
+    except Exception as e:
+        print('前回の集計結果を読めなかったため、全部の月を読み直します:', e)
+        prev_shops = {}
+
+all_shops, reused = [], set()
 for key in sorted(files):
     path, d, mk = files[key]
+    if mk != latest_month and mk in prev_shops:
+        if mk not in reused:
+            reused.add(mk)
+            all_shops.extend(prev_shops[mk])
+            print(f'{mk}: 前回の集計結果を使用（{len(prev_shops[mk])}店舗・読み直しなし）')
+        continue
     shops = parse_file(path, d)
     print(f'{d}: {len(shops)}店舗 ({os.path.basename(os.path.dirname(path))}/{os.path.basename(path)})')
     for it in shops:
         it['month'] = mk
-        s = staff_data.setdefault(it['staff'], {'a_count': 0, 'non_a_red_total': 0, 'shops': []})
-        s['a_count'] += it['is_a_red']
-        s['non_a_red_total'] += it['non_a_count']
-        for col in it['non_a_items']:
-            col_ranking[col] = col_ranking.get(col, 0) + 1
-        s['shops'].append(it)
+    all_shops.extend(shops)
+
+staff_data, col_ranking = {}, {}
+for it in all_shops:
+    s = staff_data.setdefault(it['staff'], {'a_count': 0, 'non_a_red_total': 0, 'shops': []})
+    s['a_count'] += it['is_a_red']
+    s['non_a_red_total'] += it['non_a_count']
+    for col in it['non_a_items']:
+        col_ranking[col] = col_ranking.get(col, 0) + 1
+    s['shops'].append(it)
 
 for info in staff_data.values():
     t = len(info['shops'])
     info['miss_rate'] = round(info['a_count'] / t * 100, 1) if t else 0.0
 
-with open(os.path.join(WORK_DIR, 'portal_json_data.json'), 'w', encoding='utf-8') as f:
+with open(json_path, 'w', encoding='utf-8') as f:
     json.dump({'staff_data': staff_data, 'col_ranking': col_ranking,
                'available_dates': [files[k][1] for k in sorted(files)],
                'months': sorted({v[2] for v in files.values()})}, f, ensure_ascii=False, indent=2, default=str)
